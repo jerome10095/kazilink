@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
-import { ArrowRight, Shield, TrendingUp, Users, Award, Briefcase, CheckCircle, Star } from 'lucide-react';
+import { ArrowRight, Shield, Users, TrendingUp, Award, Briefcase, CheckCircle, Star, User } from 'lucide-react';
 import Reveal from '../components/animations/Reveal';
 import Counter from '../components/animations/Counter';
 import WorkerCard from '../components/ui/WorkerCard';
