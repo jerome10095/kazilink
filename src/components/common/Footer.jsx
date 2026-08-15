@@ -53,3 +53,11 @@ export default function Footer() {
               </a>
               <a href="#" className="p-2 rounded-full bg-white/5 text-paper/40 hover:bg-primary-500/20 hover:text-primary-400 transition-colors">
                 <Linkedin size={18} />
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}

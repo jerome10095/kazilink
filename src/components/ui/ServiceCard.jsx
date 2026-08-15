@@ -1,6 +1,6 @@
-import { Shield, Users, TrendingUp, Award, CheckCircle, BookOpen, LucideIcon, ArrowRight } from 'lucide-react';
+import { Shield, Users, TrendingUp, Award, CheckCircle, BookOpen, ArrowRight } from 'lucide-react';
 
-const iconMap: Record<string, LucideIcon> = {
+const iconMap = {
   Shield,
   Users,
   TrendingUp,
