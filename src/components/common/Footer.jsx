@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Briefcase, Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Youtube, ArrowRight } from 'lucide-react';
+import { Briefcase, Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Youtube, ArrowRight, Heart } from 'lucide-react';
 
 const quickLinks = [
   { to: '/about', label: 'About Us' },
@@ -33,7 +33,7 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <Link to="/" className="flex items-center gap-2 mb-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full gradient-primary text-white">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-500 text-white">
                 <Briefcase size={18} />
               </div>
               <span className="font-display text-xl font-bold text-white">
@@ -45,77 +45,11 @@ export default function Footer() {
               professional development, and ongoing support.
             </p>
             <div className="flex gap-3 mt-4">
-              <a href="#" className="text-paper/40 hover:text-paper transition-colors">
-                <Facebook size={20} />
+              <a href="#" className="p-2 rounded-full bg-white/5 text-paper/40 hover:bg-primary-500/20 hover:text-primary-400 transition-colors">
+                <Facebook size={18} />
               </a>
-              <a href="#" className="text-paper/40 hover:text-paper transition-colors">
-                <Twitter size={20} />
+              <a href="#" className="p-2 rounded-full bg-white/5 text-paper/40 hover:bg-primary-500/20 hover:text-primary-400 transition-colors">
+                <Twitter size={18} />
               </a>
-              <a href="#" className="text-paper/40 hover:text-paper transition-colors">
-                <Linkedin size={20} />
-              </a>
-              <a href="#" className="text-paper/40 hover:text-paper transition-colors">
-                <Youtube size={20} />
-              </a>
-            </div>
-          </div>
-
-          {/* Quick Links */}
-          <div>
-            <h4 className="font-semibold text-white mb-4">Quick Links</h4>
-            <ul className="space-y-2 text-sm">
-              {quickLinks.map((link) => (
-                <li key={link.to}>
-                  <Link to={link.to} className="hover:text-white transition-colors">
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Resources */}
-          <div>
-            <h4 className="font-semibold text-white mb-4">Resources</h4>
-            <ul className="space-y-2 text-sm">
-              {resources.map((link) => (
-                <li key={link.to}>
-                  <Link to={link.to} className="hover:text-white transition-colors">
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Contact */}
-          <div>
-            <h4 className="font-semibold text-white mb-4">Get in Touch</h4>
-            <ul className="space-y-3 text-sm">
-              <li className="flex items-start gap-3">
-                <MapPin size={18} className="text-primary-400 shrink-0 mt-0.5" />
-                <span>Kigali, Rwanda</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <Mail size={18} className="text-primary-400 shrink-0 mt-0.5" />
-                <span>hello@kazilink.com</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <Phone size={18} className="text-primary-400 shrink-0 mt-0.5" />
-                <span>+250 788 123 456</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="mt-12 pt-6 border-t border-paper/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-paper/40">
-          <span>© {new Date().getFullYear()} KaziLink. All rights reserved.</span>
-          <div className="flex gap-6">
-            <Link to="/privacy">Privacy Policy</Link>
-            <Link to="/terms">Terms of Service</Link>
-          </div>
-        </div>
-      </div>
-    </footer>
-  );
-}
+              <a href="#" className="p-2 rounded-full bg-white/5 text-paper/40 hover:bg-primary-500/20 hover:text-primary-400 transition-colors">
+                <Linkedin size={18} />
