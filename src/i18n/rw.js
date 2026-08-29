@@ -4,7 +4,7 @@ export default {
     services: 'Serivisi',
     workers: 'Abakozi',
     about: 'Abo turi bo',
-    impact: 'Ingaruka',
+    impact: 'Umusaruro',
     careers: 'Imyuga',
     contact: 'Twandikire',
     login: 'Injira',
