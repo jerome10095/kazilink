@@ -7,7 +7,6 @@ import {
   Award,
   Briefcase,
   CheckCircle,
-  Star,
   User,
   Sparkles,
   Zap,
@@ -39,121 +38,110 @@ export default function Home() {
         <title>KaziLink - Connect with Verified Workers & Trusted Employers</title>
       </Helmet>
 
-      <section className="relative overflow-hidden bg-gradient-to-b from-primary-50/70 via-white to-white pb-20 pt-32 md:pt-40">
+      <section className="relative isolate overflow-hidden bg-gradient-to-b from-primary-50/70 via-white to-white pb-24 pt-32 md:min-h-[680px] md:pt-40">
+        {/* Hero background photo — visible from md up, where there's room for it to sit behind the copy */}
+        <div
+          className="absolute inset-0 -z-20 hidden bg-cover bg-right-top md:block"
+          style={{ backgroundImage: "url('/Herro1.png')" }}
+          aria-hidden="true"
+        />
+        {/* Legibility overlay: solid where the text sits, fading out toward the photo */}
+        <div
+          className="absolute inset-0 -z-10 hidden bg-gradient-to-r from-white via-white/92 to-white/25 md:block"
+          aria-hidden="true"
+        />
+        <div className="absolute inset-x-0 bottom-0 -z-10 h-24 bg-gradient-to-t from-white to-transparent" aria-hidden="true" />
+
         <div className="container-custom relative z-10">
-          <div className="grid items-center gap-14 lg:grid-cols-2">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+            className="max-w-xl"
+          >
+            <span className="inline-flex items-center gap-2 rounded-full bg-primary-100 px-4 py-1.5 text-sm font-semibold text-primary-700">
+              <Sparkles size={14} /> Rwanda's trusted hiring platform
+            </span>
+
+            <h1 className="mt-5 text-4xl font-bold leading-tight text-primary-800 md:text-5xl lg:text-[3.4rem]">
+              Connect with <span className="text-primary-500">verified workers</span> you can trust.
+            </h1>
+
+            <p className="mt-5 max-w-xl text-lg leading-relaxed text-primary-700/75">
+              KaziLink links skilled Rwandan workers with employers through verified profiles, transparent ratings, and a dependable hiring process — from first contact to job done.
+            </p>
+
+            <div className="mt-8 flex flex-wrap gap-4">
+              <Link to="/find-workers" className="btn-primary gap-2">
+                Find Workers <ArrowRight size={18} />
+              </Link>
+              <Link to="/register" className="btn-outline gap-2">
+                Join as a Worker
+              </Link>
+            </div>
+
+            <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3">
+              {trustPoints.map((point) => (
+                <div key={point} className="flex items-center gap-2 text-sm font-medium text-primary-700/80">
+                  <CheckCircle size={16} className="text-primary-500" /> {point}
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              {heroWorkers.map((worker) => {
+                const initials = worker.name.split(' ').map((part) => part[0]).slice(0, 2).join('').toUpperCase();
+                return (
+                  <Link
+                    key={worker.id}
+                    to={`/workers/${worker.id}`}
+                    className="flex items-center gap-2 rounded-full border border-primary-100 bg-white/95 py-1.5 pl-1.5 pr-3 shadow-soft backdrop-blur-sm transition hover:bg-primary-50"
+                  >
+                    <span className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-500 text-xs font-semibold text-white">
+                      {initials}
+                      {worker.verified && (
+                        <ShieldCheck size={12} className="absolute -bottom-0.5 -right-0.5 rounded-full bg-white text-primary-600" />
+                      )}
+                    </span>
+                    <span className="text-xs font-medium text-primary-800">{worker.name.split(' ')[0]} · {worker.trade}</span>
+                  </Link>
+                );
+              })}
+              <Link to="/find-workers" className="inline-flex items-center gap-1 text-xs font-semibold text-primary-700 hover:underline">
+                View all <ArrowRight size={12} />
+              </Link>
+            </div>
+
+            <div className="mt-10 grid max-w-lg grid-cols-3 gap-4 border-t border-primary-100 pt-6">
+              {heroStats.map((stat) => (
+                <div key={stat.label}>
+                  <div className="text-2xl font-bold text-primary-700">
+                    <Counter end={stat.value} suffix={stat.suffix} />
+                  </div>
+                  <p className="mt-1 text-xs text-primary-700/70">{stat.label}</p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Floating stat pinned over the photo, clear of the workers' faces */}
+        <div className="absolute inset-x-0 bottom-10 z-10 hidden md:block">
+          <div className="container-custom flex justify-end">
             <motion.div
-              initial={{ opacity: 0, y: 24 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              className="flex items-center gap-3 rounded-2xl border border-primary-100 bg-white/90 p-4 shadow-strong backdrop-blur-sm"
             >
-              <span className="inline-flex items-center gap-2 rounded-full bg-primary-100 px-4 py-1.5 text-sm font-semibold text-primary-700">
-                <Sparkles size={14} /> Rwanda's trusted hiring platform
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary-700 text-white">
+                <Award size={18} />
               </span>
-
-              <h1 className="mt-5 text-4xl font-bold leading-tight text-primary-800 md:text-5xl lg:text-[3.4rem]">
-                Connect with <span className="text-primary-500">verified workers</span> you can trust.
-              </h1>
-
-              <p className="mt-5 max-w-xl text-lg leading-relaxed text-primary-700/75">
-                KaziLink links skilled Rwandan workers with employers through verified profiles, transparent ratings, and a dependable hiring process — from first contact to job done.
-              </p>
-
-              <div className="mt-8 flex flex-wrap gap-4">
-                <Link to="/find-workers" className="btn-primary gap-2">
-                  Find Workers <ArrowRight size={18} />
-                </Link>
-                <Link to="/register" className="btn-outline gap-2">
-                  Join as a Worker
-                </Link>
-              </div>
-
-              <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3">
-                {trustPoints.map((point) => (
-                  <div key={point} className="flex items-center gap-2 text-sm font-medium text-primary-700/80">
-                    <CheckCircle size={16} className="text-primary-500" /> {point}
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-10 grid max-w-lg grid-cols-3 gap-4 border-t border-primary-100 pt-6">
-                {heroStats.map((stat) => (
-                  <div key={stat.label}>
-                    <div className="text-2xl font-bold text-primary-700">
-                      <Counter end={stat.value} suffix={stat.suffix} />
-                    </div>
-                    <p className="mt-1 text-xs text-primary-700/70">{stat.label}</p>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 30, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.7, delay: 0.15 }}
-              className="relative mx-auto w-full max-w-md"
-            >
-              <div className="absolute -left-10 -top-10 h-40 w-40 rounded-full bg-primary-200/50 blur-3xl" />
-              <div className="absolute -bottom-10 -right-6 h-40 w-40 rounded-full bg-primary-400/30 blur-3xl" />
-
-              <div className="card relative z-10 p-6">
-                <div className="mb-5 flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-500">Live on KaziLink</p>
-                    <h3 className="mt-1 text-lg font-semibold text-primary-800">Verified workers near you</h3>
-                  </div>
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-100 text-primary-700">
-                    <ShieldCheck size={18} />
-                  </span>
-                </div>
-
-                <div className="space-y-3">
-                  {heroWorkers.map((worker) => {
-                    const initials = worker.name.split(' ').map((part) => part[0]).slice(0, 2).join('').toUpperCase();
-                    return (
-                      <Link
-                        key={worker.id}
-                        to={`/workers/${worker.id}`}
-                        className="flex items-center gap-3 rounded-2xl border border-primary-100 bg-paper/60 p-3 transition-colors hover:bg-primary-50"
-                      >
-                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary-500 text-sm font-semibold text-white">
-                          {initials}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-1.5">
-                            <p className="truncate text-sm font-semibold text-primary-800">{worker.name}</p>
-                            {worker.verified && <ShieldCheck size={13} className="shrink-0 text-primary-500" />}
-                          </div>
-                          <p className="text-xs text-primary-700/70">{worker.trade} · {worker.location.split(',')[0]}</p>
-                        </div>
-                        <div className="flex shrink-0 items-center gap-1 rounded-full bg-primary-50 px-2.5 py-1 text-xs font-semibold text-primary-700">
-                          <Star size={12} className="fill-primary-500 text-primary-500" />
-                          {worker.rating}
-                        </div>
-                      </Link>
-                    );
-                  })}
-                </div>
-
-                <Link
-                  to="/find-workers"
-                  className="mt-5 flex items-center justify-center gap-2 rounded-full bg-primary-50 py-3 text-sm font-semibold text-primary-700 transition hover:bg-primary-100"
-                >
-                  View all verified workers <ArrowRight size={15} />
-                </Link>
-              </div>
-
-              <div className="absolute -bottom-6 -left-6 z-20 hidden items-center gap-3 rounded-2xl border border-primary-100 bg-white p-4 shadow-strong sm:flex">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary-700 text-white">
-                  <Award size={18} />
-                </span>
-                <div>
-                  <p className="text-lg font-bold text-primary-800">
-                    <Counter end={jobsStat.value} suffix={jobsStat.suffix} />
-                  </p>
-                  <p className="text-xs text-primary-700/70">Jobs completed</p>
-                </div>
+              <div>
+                <p className="text-lg font-bold text-primary-800">
+                  <Counter end={jobsStat.value} suffix={jobsStat.suffix} />
+                </p>
+                <p className="text-xs text-primary-700/70">Jobs completed</p>
               </div>
             </motion.div>
           </div>
