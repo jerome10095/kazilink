@@ -38,19 +38,18 @@ export default function Home() {
         <title>KaziLink - Connect with Verified Workers & Trusted Employers</title>
       </Helmet>
 
-      <section className="relative isolate overflow-hidden bg-gradient-to-b from-primary-50/70 via-white to-white pb-24 pt-32 md:min-h-[680px] md:pt-40">
+      <section className="relative isolate overflow-hidden bg-gradient-to-br from-primary-900 via-primary-800 to-primary-900 pb-24 pt-32 md:min-h-[680px] md:pt-40">
         {/* Hero background photo — visible from md up, where there's room for it to sit behind the copy */}
         <div
           className="absolute inset-0 -z-20 hidden bg-cover bg-right-top md:block"
           style={{ backgroundImage: "url('/Herro1.png')" }}
           aria-hidden="true"
         />
-        {/* Legibility overlay: solid where the text sits, fading out toward the photo */}
+        {/* Dark green wash: solid where the text sits, fading to a tinted glaze over the photo so it recedes behind the content */}
         <div
-          className="absolute inset-0 -z-10 hidden bg-gradient-to-r from-white via-white/92 to-white/25 md:block"
+          className="absolute inset-0 -z-10 hidden bg-gradient-to-r from-primary-900 via-primary-900/85 to-primary-900/35 md:block"
           aria-hidden="true"
         />
-        <div className="absolute inset-x-0 bottom-0 -z-10 h-24 bg-gradient-to-t from-white to-transparent" aria-hidden="true" />
 
         <div className="container-custom relative z-10">
           <motion.div
@@ -63,27 +62,33 @@ export default function Home() {
               <Sparkles size={14} /> Rwanda's trusted hiring platform
             </span>
 
-            <h1 className="mt-5 text-4xl font-bold leading-tight text-primary-800 md:text-5xl lg:text-[3.4rem]">
-              Connect with <span className="text-primary-500">verified workers</span> you can trust.
+            <h1 className="mt-5 text-4xl font-bold leading-tight text-white md:text-5xl lg:text-[3.4rem]">
+              Connect with <span className="text-primary-200">verified workers</span> you can trust.
             </h1>
 
-            <p className="mt-5 max-w-xl text-lg leading-relaxed text-primary-700/75">
+            <p className="mt-5 max-w-xl text-lg leading-relaxed text-primary-100/85">
               KaziLink links skilled Rwandan workers with employers through verified profiles, transparent ratings, and a dependable hiring process — from first contact to job done.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-4">
-              <Link to="/find-workers" className="btn-primary gap-2">
+              <Link
+                to="/find-workers"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 font-semibold text-primary-800 shadow-lg shadow-primary-900/30 transition-all hover:bg-primary-50"
+              >
                 Find Workers <ArrowRight size={18} />
               </Link>
-              <Link to="/register" className="btn-outline gap-2">
+              <Link
+                to="/register"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 bg-white/5 px-6 py-3 font-semibold text-white transition-all hover:bg-white/10"
+              >
                 Join as a Worker
               </Link>
             </div>
 
             <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3">
               {trustPoints.map((point) => (
-                <div key={point} className="flex items-center gap-2 text-sm font-medium text-primary-700/80">
-                  <CheckCircle size={16} className="text-primary-500" /> {point}
+                <div key={point} className="flex items-center gap-2 text-sm font-medium text-primary-100/85">
+                  <CheckCircle size={16} className="text-primary-300" /> {point}
                 </div>
               ))}
             </div>
@@ -107,18 +112,18 @@ export default function Home() {
                   </Link>
                 );
               })}
-              <Link to="/find-workers" className="inline-flex items-center gap-1 text-xs font-semibold text-primary-700 hover:underline">
+              <Link to="/find-workers" className="inline-flex items-center gap-1 text-xs font-semibold text-primary-100 hover:text-white hover:underline">
                 View all <ArrowRight size={12} />
               </Link>
             </div>
 
-            <div className="mt-10 grid max-w-lg grid-cols-3 gap-4 border-t border-primary-100 pt-6">
+            <div className="mt-10 grid max-w-lg grid-cols-3 gap-4 border-t border-white/15 pt-6">
               {heroStats.map((stat) => (
                 <div key={stat.label}>
-                  <div className="text-2xl font-bold text-primary-700">
+                  <div className="text-2xl font-bold text-white">
                     <Counter end={stat.value} suffix={stat.suffix} />
                   </div>
-                  <p className="mt-1 text-xs text-primary-700/70">{stat.label}</p>
+                  <p className="mt-1 text-xs text-primary-100/70">{stat.label}</p>
                 </div>
               ))}
             </div>
