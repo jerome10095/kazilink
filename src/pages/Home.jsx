@@ -17,20 +17,22 @@ import Counter from '../components/animations/Counter';
 import WorkerCard from '../components/ui/WorkerCard';
 import ServiceCard from '../components/ui/ServiceCard';
 import { workers, services, stats } from '../data';
-
-const heroSteps = [
-  { title: 'Create Your Profile', description: 'Sign up and complete your profile with skills and experience.', icon: User, tone: 'bg-primary-100 text-primary-700' },
-  { title: 'Get Verified', description: 'Pass identity checks, assessments, and reference validation.', icon: Shield, tone: 'bg-secondary-100 text-secondary-700' },
-  { title: 'Get Matched', description: 'Receive tailored opportunities based on your qualifications.', icon: Briefcase, tone: 'bg-accent-100 text-accent-700' },
-];
-
-const trustPoints = ['Identity verified', 'Skills assessed', 'Community rated'];
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Home() {
+  const { t, pick } = useLanguage();
   const featuredWorkers = workers.slice(0, 6);
   const heroWorkers = workers.filter((worker) => worker.verified).slice(0, 3);
   const heroStats = stats.slice(0, 3);
   const jobsStat = stats.find((stat) => stat.label === 'Jobs Completed') ?? stats[0];
+
+  const heroSteps = [
+    { title: t('home.step1Title'), description: t('home.step1Desc'), icon: User, tone: 'bg-primary-100 text-primary-700 dark:bg-primary-700 dark:text-primary-100' },
+    { title: t('home.step2Title'), description: t('home.step2Desc'), icon: Shield, tone: 'bg-secondary-100 text-secondary-700 dark:bg-secondary-700/60 dark:text-secondary-200' },
+    { title: t('home.step3Title'), description: t('home.step3Desc'), icon: Briefcase, tone: 'bg-accent-100 text-accent-700 dark:bg-accent-700/60 dark:text-accent-200' },
+  ];
+
+  const trustPoints = [t('home.trust1'), t('home.trust2'), t('home.trust3')];
 
   return (
     <>
@@ -59,15 +61,15 @@ export default function Home() {
             className="max-w-xl"
           >
             <span className="inline-flex items-center gap-2 rounded-full bg-primary-100 px-4 py-1.5 text-sm font-semibold text-primary-700">
-              <Sparkles size={14} /> Rwanda's trusted hiring platform
+              <Sparkles size={14} /> {t('home.heroBadge')}
             </span>
 
             <h1 className="mt-5 text-4xl font-bold leading-tight text-white md:text-5xl lg:text-[3.4rem]">
-              Connect with <span className="text-primary-200">verified workers</span> you can trust.
+              {t('home.heroTitlePre')}<span className="text-primary-200">{t('home.heroTitleHighlight')}</span>{t('home.heroTitlePost')}
             </h1>
 
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-primary-100/85">
-              KaziLink links skilled Rwandan workers with employers through verified profiles, transparent ratings, and a dependable hiring process — from first contact to job done.
+              {t('home.heroParagraph')}
             </p>
 
             <div className="mt-8 flex flex-wrap gap-4">
@@ -75,13 +77,13 @@ export default function Home() {
                 to="/find-workers"
                 className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 font-semibold text-primary-800 shadow-lg shadow-primary-900/30 transition-all hover:bg-primary-50"
               >
-                Find Workers <ArrowRight size={18} />
+                {t('home.ctaFindWorkers')} <ArrowRight size={18} />
               </Link>
               <Link
                 to="/register"
                 className="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 bg-white/5 px-6 py-3 font-semibold text-white transition-all hover:bg-white/10"
               >
-                Join as a Worker
+                {t('home.ctaJoinWorker')}
               </Link>
             </div>
 
@@ -108,12 +110,12 @@ export default function Home() {
                         <ShieldCheck size={12} className="absolute -bottom-0.5 -right-0.5 rounded-full bg-white text-primary-600" />
                       )}
                     </span>
-                    <span className="text-xs font-medium text-primary-800">{worker.name.split(' ')[0]} · {worker.trade}</span>
+                    <span className="text-xs font-medium text-primary-800">{worker.name.split(' ')[0]} · {pick(worker.trade, worker.tradeRw)}</span>
                   </Link>
                 );
               })}
               <Link to="/find-workers" className="inline-flex items-center gap-1 text-xs font-semibold text-primary-100 hover:text-white hover:underline">
-                View all <ArrowRight size={12} />
+                {t('common.viewAll')} <ArrowRight size={12} />
               </Link>
             </div>
 
@@ -123,7 +125,7 @@ export default function Home() {
                   <div className="text-2xl font-bold text-white">
                     <Counter end={stat.value} suffix={stat.suffix} />
                   </div>
-                  <p className="mt-1 text-xs text-primary-100/70">{stat.label}</p>
+                  <p className="mt-1 text-xs text-primary-100/70">{t(`statLabels.${stat.label}`)}</p>
                 </div>
               ))}
             </div>
@@ -146,23 +148,23 @@ export default function Home() {
                 <p className="text-lg font-bold text-primary-800">
                   <Counter end={jobsStat.value} suffix={jobsStat.suffix} />
                 </p>
-                <p className="text-xs text-primary-700/70">Jobs completed</p>
+                <p className="text-xs text-primary-700/70">{t('home.jobsCompleted')}</p>
               </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      <section className="section-padding bg-white">
+      <section className="section-padding bg-white dark:bg-primary-900">
         <div className="container-custom">
           <Reveal>
             <div className="mx-auto mb-12 max-w-3xl text-center">
-              <span className="inline-block rounded-full bg-primary-50 px-4 py-1.5 text-sm font-semibold uppercase tracking-[0.2em] text-primary-700">
-                What We Offer
+              <span className="inline-block rounded-full bg-primary-50 px-4 py-1.5 text-sm font-semibold uppercase tracking-[0.2em] text-primary-700 dark:bg-primary-800 dark:text-primary-200">
+                {t('home.offerBadge')}
               </span>
-              <h2 className="mt-3 text-3xl font-bold text-primary-800 md:text-4xl">Built for trusted hiring and skilled work</h2>
-              <p className="mt-4 text-base leading-relaxed text-primary-700/75">
-                From verification to training and support, we keep workers and employers connected through a clearer, safer, and more transparent process.
+              <h2 className="mt-3 text-3xl font-bold text-primary-800 md:text-4xl dark:text-white">{t('home.offerHeading')}</h2>
+              <p className="mt-4 text-base leading-relaxed text-primary-700/75 dark:text-primary-100/70">
+                {t('home.offerParagraph')}
               </p>
             </div>
           </Reveal>
@@ -177,38 +179,38 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section-padding bg-primary-50/50">
+      <section className="section-padding bg-primary-50/50 dark:bg-primary-800/40">
         <div className="container-custom">
           <div className="grid items-center gap-12 lg:grid-cols-2">
             <Reveal>
               <div>
-                <span className="inline-block rounded-full bg-primary-100 px-4 py-1.5 text-sm font-semibold uppercase tracking-[0.2em] text-primary-700">
-                  Simple Process
+                <span className="inline-block rounded-full bg-primary-100 px-4 py-1.5 text-sm font-semibold uppercase tracking-[0.2em] text-primary-700 dark:bg-primary-700 dark:text-primary-100">
+                  {t('home.processBadge')}
                 </span>
-                <h2 className="mt-3 text-3xl font-bold text-primary-800 md:text-4xl">How KaziLink works</h2>
-                <p className="mt-4 max-w-xl text-base leading-relaxed text-primary-700/75">
-                  Whether you are a worker seeking opportunity or an employer looking for trusted talent, the process remains clear, quick, and reliable.
+                <h2 className="mt-3 text-3xl font-bold text-primary-800 md:text-4xl dark:text-white">{t('home.processHeading')}</h2>
+                <p className="mt-4 max-w-xl text-base leading-relaxed text-primary-700/75 dark:text-primary-100/70">
+                  {t('home.processParagraph')}
                 </p>
 
                 <div className="mt-8 space-y-4">
                   {heroSteps.map((step, index) => (
-                    <div key={step.title} className="flex gap-4 rounded-[26px] border border-primary-100 bg-white p-4 shadow-soft">
+                    <div key={step.title} className="flex gap-4 rounded-[26px] border border-primary-100 bg-white p-4 shadow-soft dark:border-primary-700/50 dark:bg-primary-800">
                       <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${step.tone}`}>
                         <step.icon size={22} />
                       </div>
                       <div>
                         <div className="mb-1 flex items-center gap-2">
-                          <span className="text-sm font-medium text-primary-400">0{index + 1}</span>
-                          <h4 className="text-lg font-semibold text-primary-800">{step.title}</h4>
+                          <span className="text-sm font-medium text-primary-400 dark:text-primary-300">0{index + 1}</span>
+                          <h4 className="text-lg font-semibold text-primary-800 dark:text-white">{step.title}</h4>
                         </div>
-                        <p className="text-sm leading-relaxed text-primary-700/75">{step.description}</p>
+                        <p className="text-sm leading-relaxed text-primary-700/75 dark:text-primary-100/70">{step.description}</p>
                       </div>
                     </div>
                   ))}
                 </div>
 
                 <Link to="/how-it-works" className="btn-outline mt-8 inline-flex items-center gap-2">
-                  Learn More <ArrowRight size={18} />
+                  {t('common.learnMore')} <ArrowRight size={18} />
                 </Link>
               </div>
             </Reveal>
@@ -217,11 +219,11 @@ export default function Home() {
               <div className="grid gap-4 sm:grid-cols-2">
                 {stats.map((stat) => (
                   <div key={stat.label} className="card p-6">
-                    <div className="text-3xl font-bold text-primary-700">
+                    <div className="text-3xl font-bold text-primary-700 dark:text-primary-200">
                       <Counter end={stat.value} suffix={stat.suffix} />
                     </div>
-                    <p className="mt-2 text-sm text-primary-700/75">{stat.label}</p>
-                    <div className="mt-5 h-2 overflow-hidden rounded-full bg-primary-50">
+                    <p className="mt-2 text-sm text-primary-700/75 dark:text-primary-100/70">{t(`statLabels.${stat.label}`)}</p>
+                    <div className="mt-5 h-2 overflow-hidden rounded-full bg-primary-50 dark:bg-primary-900/60">
                       <div className="h-full rounded-full bg-gradient-to-r from-primary-400 to-primary-600" style={{ width: `${Math.max(42, Math.min(96, stat.value))}%` }} />
                     </div>
                   </div>
@@ -232,18 +234,18 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section-padding bg-white">
+      <section className="section-padding bg-white dark:bg-primary-900">
         <div className="container-custom">
           <Reveal>
             <div className="mb-10 flex items-center justify-between gap-4">
               <div>
-                <span className="inline-block rounded-full bg-primary-50 px-4 py-1.5 text-sm font-semibold uppercase tracking-[0.2em] text-primary-700">
-                  Top Talent
+                <span className="inline-block rounded-full bg-primary-50 px-4 py-1.5 text-sm font-semibold uppercase tracking-[0.2em] text-primary-700 dark:bg-primary-800 dark:text-primary-200">
+                  {t('home.talentBadge')}
                 </span>
-                <h2 className="mt-3 text-3xl font-bold text-primary-800 md:text-4xl">Featured Workers</h2>
+                <h2 className="mt-3 text-3xl font-bold text-primary-800 md:text-4xl dark:text-white">{t('home.talentHeading')}</h2>
               </div>
-              <Link to="/find-workers" className="inline-flex items-center gap-2 text-sm font-semibold text-primary-700">
-                View all <ArrowRight size={16} />
+              <Link to="/find-workers" className="inline-flex items-center gap-2 text-sm font-semibold text-primary-700 dark:text-primary-200">
+                {t('common.viewAll')} <ArrowRight size={16} />
               </Link>
             </div>
           </Reveal>
@@ -267,19 +269,19 @@ export default function Home() {
             <div className="mx-auto max-w-3xl">
               <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white/90 backdrop-blur-sm">
                 <Sparkles size={16} />
-                Join 5,000+ verified workers
+                {t('home.ctaPill')}
               </div>
-              <h2 className="text-3xl font-bold md:text-5xl">Ready to build your next opportunity?</h2>
+              <h2 className="text-3xl font-bold md:text-5xl">{t('home.ctaHeading')}</h2>
               <p className="mx-auto mt-4 max-w-2xl text-base text-white/80 md:text-lg">
-                Join thousands of workers and employers who trust KaziLink to build careers, scale businesses, and grow with confidence.
+                {t('home.ctaParagraph')}
               </p>
               <div className="mt-8 flex flex-wrap justify-center gap-4">
                 <Link to="/register" className="inline-flex items-center gap-2 rounded-full bg-white px-8 py-3.5 font-semibold text-primary-800 shadow-lg shadow-primary-900/25 transition-all hover:bg-primary-50">
                   <Zap size={18} />
-                  Join KaziLink Today
+                  {t('home.ctaJoinToday')}
                 </Link>
                 <Link to="/contact" className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/5 px-8 py-3.5 font-semibold text-white transition-all hover:bg-white/10">
-                  Contact Us
+                  {t('common.contactUs')}
                 </Link>
               </div>
             </div>

@@ -3,6 +3,7 @@ export const workers = [
     id: 1,
     name: 'Jean Claude',
     trade: 'Electrician',
+    tradeRw: "Umukozi w'Amashanyarazi",
     rating: 4.9,
     reviewCount: 127,
     location: 'Kigali, Rwanda',
@@ -11,12 +12,14 @@ export const workers = [
     available: true,
     rate: 15000,
     bio: 'Certified electrician with expertise in residential and commercial wiring. Passionate about safety and quality work.',
+    bioRw: "Umukozi w'amashanyarazi wemewe, ufite ubumenyi mu kuvubika amashanyarazi mu mazu no mu bigo by'ubucuruzi. Yishimira umutekano n'akazi keza.",
     skills: ['Wiring', 'Safety Systems', 'Troubleshooting']
   },
   {
     id: 2,
     name: 'Marie Uwimana',
     trade: 'Carpenter',
+    tradeRw: 'Umubaji',
     rating: 4.8,
     reviewCount: 98,
     location: 'Kigali, Rwanda',
@@ -25,12 +28,14 @@ export const workers = [
     available: true,
     rate: 12000,
     bio: 'Skilled carpenter specializing in custom furniture and woodworking. Attention to detail and client satisfaction.',
+    bioRw: "Umubaji w'inzobere mu gukora ibikoresho by'inzu byihariye n'imirimo y'ibiti. Yita cyane ku burambuzi no kwishimira kw'abakiriya.",
     skills: ['Furniture Making', 'Woodworking', 'Restoration']
   },
   {
     id: 3,
     name: 'David Niyonzima',
     trade: 'Plumber',
+    tradeRw: 'Umukozi wa Plomberi',
     rating: 4.7,
     reviewCount: 85,
     location: 'Kigali, Rwanda',
@@ -39,12 +44,14 @@ export const workers = [
     available: false,
     rate: 13000,
     bio: 'Professional plumber with extensive experience in residential and commercial plumbing systems.',
+    bioRw: "Umukozi w'inzobere muri plomberi ufite uburambe buhagije mu mazu no mu bigo by'ubucuruzi.",
     skills: ['Pipe Installation', 'Leak Repair', 'Maintenance']
   },
   {
     id: 4,
     name: 'Sarah Mukamana',
     trade: 'Cleaner',
+    tradeRw: "Umukozi w'Isuku",
     rating: 4.9,
     reviewCount: 156,
     location: 'Kigali, Rwanda',
@@ -53,12 +60,14 @@ export const workers = [
     available: true,
     rate: 8000,
     bio: 'Detail-oriented professional cleaner with expertise in residential and office cleaning.',
+    bioRw: "Umukozi w'isuku w'inzobere wita ku burambuzi, ufite ubumenyi mu gusukura amazu na za ofisi.",
     skills: ['Deep Cleaning', 'Sanitization', 'Organization']
   },
   {
     id: 5,
     name: 'Patrick Kagame',
     trade: 'Mechanic',
+    tradeRw: 'Umukanishi',
     rating: 4.6,
     reviewCount: 112,
     location: 'Kigali, Rwanda',
@@ -67,12 +76,14 @@ export const workers = [
     available: true,
     rate: 18000,
     bio: 'Master mechanic with expertise in engine diagnostics and repair. Committed to getting you back on the road.',
+    bioRw: "Umukanishi w'inzobere ufite ubumenyi mu gusuzuma no gusana moteri. Yiyemeje kugufasha gusubira mu nzira vuba.",
     skills: ['Engine Repair', 'Diagnostics', 'Maintenance']
   },
   {
     id: 6,
     name: 'Grace Uwamahoro',
     trade: 'Painter',
+    tradeRw: "Umusizi w'Amarangi",
     rating: 4.8,
     reviewCount: 74,
     location: 'Kigali, Rwanda',
@@ -81,12 +92,14 @@ export const workers = [
     available: true,
     rate: 10000,
     bio: 'Creative painter specializing in residential and commercial painting with attention to detail.',
+    bioRw: "Umusizi w'amarangi w'inzobere mu gusiga amazu n'ibigo by'ubucuruzi, wita cyane ku burambuzi.",
     skills: ['Interior Painting', 'Exterior Painting', 'Color Design']
   },
   {
     id: 7,
     name: 'Emmanuel Habimana',
     trade: 'Builder',
+    tradeRw: 'Umwubatsi',
     rating: 4.7,
     reviewCount: 93,
     location: 'Kigali, Rwanda',
@@ -95,12 +108,14 @@ export const workers = [
     available: true,
     rate: 20000,
     bio: 'Experienced builder with expertise in residential and commercial construction projects.',
+    bioRw: "Umwubatsi ufite uburambe n'ubumenyi mu mishinga yo kubaka amazu n'ibigo by'ubucuruzi.",
     skills: ['Construction', 'Project Management', 'Design']
   },
   {
     id: 8,
     name: 'Alice Uwizeyimana',
     trade: 'Tailor',
+    tradeRw: 'Umudozi',
     rating: 4.9,
     reviewCount: 203,
     location: 'Kigali, Rwanda',
@@ -109,6 +124,7 @@ export const workers = [
     available: true,
     rate: 9000,
     bio: 'Master tailor specializing in custom clothing, alterations, and fashion design.',
+    bioRw: "Umudozi w'inzobere mu gudoza imyenda yihariye, guhindura imyenda, no gukora imideri y'imyambarire.",
     skills: ['Custom Clothing', 'Alterations', 'Design']
   }
 ];

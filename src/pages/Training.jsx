@@ -1,32 +1,34 @@
 import { Helmet } from 'react-helmet-async';
 import Reveal from '../components/animations/Reveal';
-import { BookOpen, Users, Shield, TrendingUp, DollarSign, MessageCircle, Award, Briefcase, CheckCircle } from 'lucide-react';
-
-const courses = [
-  { icon: MessageCircle, title: 'Customer Service', desc: 'Learn effective communication and conflict resolution.' },
-  { icon: Shield, title: 'Workplace Ethics', desc: 'Understand workplace standards and compliance.' },
-  { icon: TrendingUp, title: 'Financial Literacy', desc: 'Budgeting, savings, and investment planning.' },
-  { icon: BookOpen, title: 'Digital Literacy', desc: 'Basic computer and digital skills for the modern workplace.' },
-  { icon: Award, title: 'Leadership', desc: 'Develop leadership and team management skills.' },
-  { icon: Users, title: 'Entrepreneurship', desc: 'Start and grow your own business.' },
-];
+import { BookOpen, Users, Shield, TrendingUp, MessageCircle, Award } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Training() {
+  const { t } = useLanguage();
+
+  const courses = [
+    { icon: MessageCircle, title: t('training.c1Title'), desc: t('training.c1Desc') },
+    { icon: Shield, title: t('training.c2Title'), desc: t('training.c2Desc') },
+    { icon: TrendingUp, title: t('training.c3Title'), desc: t('training.c3Desc') },
+    { icon: BookOpen, title: t('training.c4Title'), desc: t('training.c4Desc') },
+    { icon: Award, title: t('training.c5Title'), desc: t('training.c5Desc') },
+    { icon: Users, title: t('training.c6Title'), desc: t('training.c6Desc') },
+  ];
+
   return (
     <>
       <Helmet>
         <title>Training Academy - Professional Development | KaziLink</title>
       </Helmet>
 
-      <section className="section-padding">
+      <section className="section-padding dark:bg-primary-900">
         <div className="container-custom">
           <Reveal>
             <div className="text-center max-w-3xl mx-auto mb-16">
-              <span className="text-primary-500 font-semibold text-sm uppercase tracking-wider">Training Academy</span>
-              <h1 className="heading-xl mt-2">Build Your Skills</h1>
-              <p className="text-lg text-ink/60 mt-4">
-                Advance your career with our professional development programs designed 
-                to build in-demand skills.
+              <span className="text-primary-500 font-semibold text-sm uppercase tracking-wider dark:text-primary-300">{t('training.badge')}</span>
+              <h1 className="heading-xl mt-2 dark:text-white">{t('training.heading')}</h1>
+              <p className="text-lg text-ink/60 mt-4 dark:text-primary-100/70">
+                {t('training.paragraph')}
               </p>
             </div>
           </Reveal>
@@ -35,13 +37,13 @@ export default function Training() {
             {courses.map((course, index) => (
               <Reveal key={index} delay={index * 0.1}>
                 <div className="card p-6 card-hover">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary-50 text-primary-500">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary-50 text-primary-500 dark:bg-primary-700/60 dark:text-primary-200">
                     <course.icon size={28} />
                   </div>
-                  <h3 className="text-xl font-semibold mt-4 mb-2">{course.title}</h3>
-                  <p className="text-ink/60 leading-relaxed">{course.desc}</p>
-                  <button className="mt-4 text-primary-500 font-medium hover:text-primary-600 transition-colors">
-                    Learn More →
+                  <h3 className="text-xl font-semibold mt-4 mb-2 dark:text-white">{course.title}</h3>
+                  <p className="text-ink/60 leading-relaxed dark:text-primary-100/70">{course.desc}</p>
+                  <button className="mt-4 text-primary-500 font-medium hover:text-primary-600 transition-colors dark:text-primary-300 dark:hover:text-primary-200">
+                    {t('common.learnMore')} →
                   </button>
                 </div>
               </Reveal>
@@ -49,14 +51,14 @@ export default function Training() {
           </div>
 
           <Reveal>
-            <div className="mt-16 card p-8 bg-primary-50 border-primary-200">
+            <div className="mt-16 card p-8 bg-primary-50 border-primary-200 dark:bg-primary-800 dark:border-primary-700/50">
               <div className="text-center">
-                <h2 className="heading-md mb-4">Ready to Start Learning?</h2>
-                <p className="text-ink/60 max-w-2xl mx-auto mb-6">
-                  Join our training programs and take the next step in your career development.
+                <h2 className="heading-md mb-4 dark:text-white">{t('training.ctaHeading')}</h2>
+                <p className="text-ink/60 max-w-2xl mx-auto mb-6 dark:text-primary-100/70">
+                  {t('training.ctaParagraph')}
                 </p>
                 <button className="btn-primary">
-                  Browse All Courses
+                  {t('training.ctaButton')}
                 </button>
               </div>
             </div>

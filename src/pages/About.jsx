@@ -1,69 +1,95 @@
 import { Helmet } from 'react-helmet-async';
 import Reveal from '../components/animations/Reveal';
 import Counter from '../components/animations/Counter';
-import { stats } from '../data';
-import { Shield, Target, Eye, Heart, Users, Briefcase } from 'lucide-react';
+import { ShieldCheck, Target, Eye, Heart, Users, Briefcase } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function About() {
+  const { t } = useLanguage();
+
+  const values = [
+    { icon: ShieldCheck, title: t('about.valueTrustTitle'), description: t('about.valueTrustDesc') },
+    { icon: Target, title: t('about.valueIntegrityTitle'), description: t('about.valueIntegrityDesc') },
+    { icon: Heart, title: t('about.valueExcellenceTitle'), description: t('about.valueExcellenceDesc') },
+    { icon: Users, title: t('about.valueImpactTitle'), description: t('about.valueImpactDesc') },
+  ];
+
+  const stats = [
+    { value: 5000, suffix: '+', label: t('about.statWorkers') },
+    { value: 800, suffix: '+', label: t('about.statEmployers') },
+    { value: 12000, suffix: '+', label: t('about.statJobsCompleted') },
+    { value: 96, suffix: '%', label: t('about.statSatisfaction') },
+  ];
+
   return (
     <>
       <Helmet>
         <title>About KaziLink - Our Mission & Vision</title>
       </Helmet>
 
-      {/* Hero */}
-      <section className="section-padding gradient-hero">
-        <div className="container-custom text-center">
+      <section className="section-padding bg-primary-50/60 dark:bg-primary-800/40">
+        <div className="container-custom">
           <Reveal>
-            <span className="text-primary-500 font-semibold text-sm uppercase tracking-wider">About Us</span>
-            <h1 className="heading-xl mt-2">Who We Are</h1>
-            <p className="text-lg text-ink/70 max-w-3xl mx-auto mt-4">
-              KaziLink was created to solve one simple problem: talented people struggle to find 
-              opportunities because trust is difficult to build.
-            </p>
+            <div className="mx-auto max-w-3xl text-center">
+              <span className="inline-block rounded-full bg-primary-100 px-4 py-1.5 text-sm font-semibold uppercase tracking-[0.2em] text-primary-700 dark:bg-primary-700 dark:text-primary-100">
+                {t('about.badge')}
+              </span>
+              <h1 className="mt-4 text-4xl font-bold text-primary-800 md:text-5xl dark:text-white">{t('about.heading')}</h1>
+              <p className="mt-4 text-lg text-primary-700/75 dark:text-primary-100/75">
+                {t('about.paragraph')}
+              </p>
+            </div>
           </Reveal>
         </div>
       </section>
 
-      {/* Mission & Vision */}
-      <section className="section-padding bg-white">
+      <section className="section-padding bg-white dark:bg-primary-900">
         <div className="container-custom">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
             <Reveal>
-              <div className="card p-8 text-center card-hover">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-100 text-primary-500 mx-auto">
-                  <Target size={32} />
+              <div className="card p-8 text-center">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary-100 text-primary-700 dark:bg-primary-700 dark:text-primary-100">
+                  <Target size={30} />
                 </div>
-                <h3 className="text-xl font-semibold mt-4">Our Mission</h3>
-                <p className="text-ink/60 mt-2">
-                  To connect skilled workers with trusted employers, creating opportunities 
-                  that transform lives and communities.
+                <h3 className="mt-5 text-2xl font-semibold text-primary-800 dark:text-white">{t('about.missionTitle')}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-primary-700/75 dark:text-primary-100/70">
+                  {t('about.missionDesc')}
                 </p>
               </div>
             </Reveal>
 
-            <Reveal delay={0.1}>
-              <div className="card p-8 text-center card-hover">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-secondary-100 text-secondary-500 mx-auto">
-                  <Eye size={32} />
+            <Reveal delay={0.08}>
+              <div className="card p-8 text-center">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary-100 text-primary-700 dark:bg-primary-700 dark:text-primary-100">
+                  <Eye size={30} />
                 </div>
-                <h3 className="text-xl font-semibold mt-4">Our Vision</h3>
-                <p className="text-ink/60 mt-2">
-                  A world where every skilled worker is recognized, and every employer 
-                  can hire with confidence.
+                <h3 className="mt-5 text-2xl font-semibold text-primary-800 dark:text-white">{t('about.visionTitle')}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-primary-700/75 dark:text-primary-100/70">
+                  {t('about.visionDesc')}
                 </p>
               </div>
             </Reveal>
 
-            <Reveal delay={0.2}>
-              <div className="card p-8 text-center card-hover">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-accent-100 text-accent-500 mx-auto">
-                  <Heart size={32} />
+            <Reveal delay={0.12}>
+              <div className="card p-8 text-center">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary-100 text-primary-700 dark:bg-primary-700 dark:text-primary-100">
+                  <Briefcase size={30} />
                 </div>
-                <h3 className="text-xl font-semibold mt-4">Our Values</h3>
-                <p className="text-ink/60 mt-2">
-                  Trust, transparency, and empowerment. We believe in creating 
-                  opportunities that uplift everyone.
+                <h3 className="mt-5 text-2xl font-semibold text-primary-800 dark:text-white">{t('about.valuesTitle')}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-primary-700/75 dark:text-primary-100/70">
+                  {t('about.valuesDesc')}
+                </p>
+              </div>
+            </Reveal>
+
+            <Reveal delay={0.16}>
+              <div className="card p-8 text-center">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary-100 text-primary-700 dark:bg-primary-700 dark:text-primary-100">
+                  <Heart size={30} />
+                </div>
+                <h3 className="mt-5 text-2xl font-semibold text-primary-800 dark:text-white">{t('about.impactTitle')}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-primary-700/75 dark:text-primary-100/70">
+                  {t('about.impactDesc')}
                 </p>
               </div>
             </Reveal>
@@ -71,17 +97,41 @@ export default function About() {
         </div>
       </section>
 
-      {/* Stats */}
-      <section className="section-padding bg-primary-50">
+      <section className="section-padding bg-primary-50/60 dark:bg-primary-800/40">
         <div className="container-custom">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-            {stats.map((stat) => (
-              <Reveal key={stat.label}>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-primary-500">
+          <div className="mb-10 text-center">
+            <h2 className="text-3xl font-bold text-primary-800 md:text-4xl dark:text-white">{t('about.coreValuesHeading')}</h2>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+            {values.map((value, index) => {
+              const Icon = value.icon;
+              return (
+                <Reveal key={value.title} delay={index * 0.06}>
+                  <div className="card p-6">
+                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary-100 text-primary-700 dark:bg-primary-700 dark:text-primary-100">
+                      <Icon size={22} />
+                    </div>
+                    <h3 className="text-xl font-semibold text-primary-800 dark:text-white">{value.title}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-primary-700/75 dark:text-primary-100/70">{value.description}</p>
+                  </div>
+                </Reveal>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section className="section-padding bg-white dark:bg-primary-900">
+        <div className="container-custom">
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+            {stats.map((stat, index) => (
+              <Reveal key={stat.label} delay={index * 0.06}>
+                <div className="card p-6 text-center">
+                  <div className="text-4xl font-bold text-primary-700 dark:text-primary-200">
                     <Counter end={stat.value} suffix={stat.suffix} />
                   </div>
-                  <p className="text-sm text-ink/60 mt-1">{stat.label}</p>
+                  <p className="mt-2 text-sm font-medium text-primary-700/80 dark:text-primary-100/75">{stat.label}</p>
                 </div>
               </Reveal>
             ))}

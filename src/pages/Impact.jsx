@@ -1,145 +1,95 @@
 import { Helmet } from 'react-helmet-async';
 import Reveal from '../components/animations/Reveal';
 import Counter from '../components/animations/Counter';
-import {
-  TrendingUp,
-  Users,
-  Briefcase,
-  Award,
-  Heart,
-  Globe,
-  Shield,
-  BookOpen,
-} from 'lucide-react';
+import { Users, ShieldCheck, Briefcase, BookOpen, TrendingUp, Heart } from 'lucide-react';
+import { stats } from '../data';
+import { useLanguage } from '../context/LanguageContext';
 
-const impactStats = [
-  {
-    icon: Users,
-    label: 'Workers Registered',
-    value: 5000,
-    suffix: '+',
-  },
-  {
-    icon: Shield,
-    label: 'Verified Workers',
-    value: 3500,
-    suffix: '+',
-  },
-  {
-    icon: Briefcase,
-    label: 'Jobs Completed',
-    value: 12000,
-    suffix: '+',
-  },
-  {
-    icon: Award,
-    label: 'Employers Served',
-    value: 800,
-    suffix: '+',
-  },
-  {
-    icon: BookOpen,
-    label: 'Training Sessions',
-    value: 250,
-    suffix: '+',
-  },
-  {
-    icon: Heart,
-    label: 'Customer Satisfaction',
-    value: 96,
-    suffix: '%',
-  },
-];
+const iconByLabel = {
+  'Workers Registered': Users,
+  'Verified Workers': ShieldCheck,
+  'Jobs Completed': Briefcase,
+  'Employers Served': Users,
+  'Training Sessions': BookOpen,
+  'Customer Satisfaction': Heart,
+};
 
 export default function Impact() {
+  const { t } = useLanguage();
+  const impactStats = stats.map((stat) => ({ ...stat, icon: iconByLabel[stat.label] ?? Users }));
+
   return (
     <>
       <Helmet>
-        <title>Our Impact - Transforming Communities | KaziLink</title>
+        <title>Our Impact - KaziLink</title>
       </Helmet>
 
-      <section className="section-padding">
+      <section className="section-padding bg-primary-50/60 dark:bg-primary-800/40">
         <div className="container-custom">
           <Reveal>
-            <div className="text-center max-w-3xl mx-auto mb-16">
-              <span className="text-primary-500 font-semibold text-sm uppercase tracking-wider">
-                Our Impact
+            <div className="mx-auto max-w-3xl text-center">
+              <span className="inline-block rounded-full bg-primary-100 px-4 py-1.5 text-sm font-semibold uppercase tracking-[0.2em] text-primary-700 dark:bg-primary-700 dark:text-primary-100">
+                {t('impact.badge')}
               </span>
-
-              <h1 className="heading-xl mt-2">
-                Making a Difference
-              </h1>
-
-              <p className="text-lg text-ink/60 mt-4">
-                KaziLink is committed to creating sustainable impact for
-                workers, employers, and communities across Rwanda.
+              <h1 className="mt-3 text-4xl font-bold text-primary-800 md:text-5xl dark:text-white">{t('impact.heading')}</h1>
+              <p className="mt-4 text-lg text-primary-700/75 dark:text-primary-100/75">
+                {t('impact.paragraph')}
               </p>
             </div>
           </Reveal>
+        </div>
+      </section>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-            {impactStats.map((stat) => {
+      <section className="section-padding bg-white dark:bg-primary-900">
+        <div className="container-custom">
+          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            {impactStats.map((stat, index) => {
               const Icon = stat.icon;
-
               return (
-                <Reveal key={stat.label}>
-                  <div className="card p-6 text-center card-hover">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-50 text-primary-500 mx-auto">
-                      <Icon size={24} />
+                <Reveal key={stat.label} delay={index * 0.05}>
+                  <div className="card p-6 text-center">
+                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary-100 text-primary-700 dark:bg-primary-700 dark:text-primary-100">
+                      <Icon size={22} />
                     </div>
-
-                    <div className="text-2xl font-bold text-primary-500 mt-3">
-                      <Counter
-                        end={stat.value}
-                        suffix={stat.suffix}
-                      />
+                    <div className="mt-4 text-3xl font-bold text-primary-700 dark:text-primary-200">
+                      <Counter end={stat.value} suffix={stat.suffix} />
                     </div>
-
-                    <p className="text-sm text-ink/60 mt-1">
-                      {stat.label}
-                    </p>
+                    <p className="mt-2 text-sm text-primary-700/75 dark:text-primary-100/70">{t(`statLabels.${stat.label}`)}</p>
                   </div>
                 </Reveal>
               );
             })}
           </div>
 
-          <Reveal>
-            <div className="mt-16 grid md:grid-cols-2 gap-8">
+          <div className="mt-16 grid gap-8 md:grid-cols-2">
+            <Reveal>
               <div className="card p-8">
-                <div className="flex items-center gap-3 mb-4">
-                  <Globe size={28} className="text-primary-500" />
-                  <h3 className="text-xl font-semibold">
-                    Community Impact
-                  </h3>
+                <div className="mb-4 flex items-center gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-100 text-primary-700 dark:bg-primary-700 dark:text-primary-100">
+                    <Users size={22} />
+                  </div>
+                  <h3 className="text-2xl font-semibold text-primary-800 dark:text-white">{t('impact.communityTitle')}</h3>
                 </div>
-
-                <p className="text-ink/60 leading-relaxed">
-                  KaziLink has created sustainable livelihoods for thousands
-                  of workers while helping businesses grow with reliable
-                  talent.
+                <p className="text-sm leading-relaxed text-primary-700/75 dark:text-primary-100/70">
+                  {t('impact.communityDesc')}
                 </p>
               </div>
+            </Reveal>
 
+            <Reveal delay={0.1}>
               <div className="card p-8">
-                <div className="flex items-center gap-3 mb-4">
-                  <TrendingUp
-                    size={28}
-                    className="text-primary-500"
-                  />
-
-                  <h3 className="text-xl font-semibold">
-                    Economic Growth
-                  </h3>
+                <div className="mb-4 flex items-center gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-100 text-primary-700 dark:bg-primary-700 dark:text-primary-100">
+                    <TrendingUp size={22} />
+                  </div>
+                  <h3 className="text-2xl font-semibold text-primary-800 dark:text-white">{t('impact.economicTitle')}</h3>
                 </div>
-
-                <p className="text-ink/60 leading-relaxed">
-                  By connecting talent with opportunity, KaziLink is driving
-                  economic growth and building a stronger workforce ecosystem.
+                <p className="text-sm leading-relaxed text-primary-700/75 dark:text-primary-100/70">
+                  {t('impact.economicDesc')}
                 </p>
               </div>
-            </div>
-          </Reveal>
+            </Reveal>
+          </div>
         </div>
       </section>
     </>

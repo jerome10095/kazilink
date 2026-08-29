@@ -3,22 +3,26 @@ import { Helmet } from 'react-helmet-async';
 import Reveal from '../components/animations/Reveal';
 import WorkerCard from '../components/ui/WorkerCard';
 import { workers } from '../data';
-import { Search, Filter, X } from 'lucide-react';
+import { Search, X } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function FindWorkers() {
+  const { t, pick } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
-  const [filters, setFilters] = useState({
-    trade: '',
-    location: '',
-    rating: '',
-  });
+  const [filters, setFilters] = useState({ trade: '', location: '', rating: '' });
 
-  const trades = [...new Set(workers.map(w => w.trade))];
-  const locations = [...new Set(workers.map(w => w.location))];
+  const trades = [...new Set(workers.map((worker) => worker.trade))];
+  const locations = [...new Set(workers.map((worker) => worker.location))];
+  const tradeLabel = (trade) => {
+    const worker = workers.find((item) => item.trade === trade);
+    return worker ? pick(worker.trade, worker.tradeRw) : trade;
+  };
 
-  const filteredWorkers = workers.filter(worker => {
-    const matchesSearch = worker.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         worker.trade.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredWorkers = workers.filter((worker) => {
+    const matchesSearch =
+      worker.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      worker.trade.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (worker.tradeRw ?? '').toLowerCase().includes(searchTerm.toLowerCase());
     const matchesTrade = !filters.trade || worker.trade === filters.trade;
     const matchesLocation = !filters.location || worker.location === filters.location;
     const matchesRating = !filters.rating || worker.rating >= parseFloat(filters.rating);
@@ -26,108 +30,119 @@ export default function FindWorkers() {
   });
 
   const clearFilters = () => {
-    setFilters({ trade: '', location: '', rating: '' });
     setSearchTerm('');
+    setFilters({ trade: '', location: '', rating: '' });
   };
 
   return (
     <>
       <Helmet>
-        <title>Find Verified Workers - KaziLink</title>
+        <title>Verified Workers - KaziLink</title>
       </Helmet>
 
-      <section className="section-padding">
+      <section className="section-padding bg-paper dark:bg-primary-900">
         <div className="container-custom">
           <Reveal>
-            <div className="text-center max-w-3xl mx-auto mb-12">
-              <span className="text-primary-500 font-semibold text-sm uppercase tracking-wider">Find Workers</span>
-              <h1 className="heading-xl mt-2">Find Verified Workers</h1>
-              <p className="text-lg text-ink/60 mt-4">
-                Search our directory of verified, skilled workers ready to work.
+            <div className="mx-auto mb-10 max-w-3xl text-center">
+              <span className="inline-block rounded-full bg-primary-100 px-4 py-1.5 text-sm font-semibold uppercase tracking-[0.2em] text-primary-700 dark:bg-primary-700 dark:text-primary-100">
+                {t('findWorkers.badge')}
+              </span>
+              <h1 className="mt-3 text-4xl font-bold text-primary-800 md:text-5xl dark:text-white">{t('findWorkers.heading')}</h1>
+              <p className="mt-4 text-lg text-primary-700/75 dark:text-primary-100/75">
+                {t('findWorkers.paragraph')}
               </p>
             </div>
           </Reveal>
 
-          {/* Search & Filters */}
-          <div className="mb-12">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/40" size={20} />
+          <div className="mb-10 rounded-[28px] border border-primary-100 bg-white p-4 shadow-soft dark:border-primary-700/50 dark:bg-primary-800">
+            <div className="flex flex-col gap-4 xl:flex-row xl:items-center">
+              <div className="relative flex-1">
+                <Search className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-primary-600 dark:text-primary-300" size={18} />
                 <input
                   type="text"
-                  placeholder="Search by name or trade..."
+                  placeholder={t('findWorkers.searchPlaceholder')}
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 rounded-xl border border-paper-dim focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                  className="w-full rounded-full border border-primary-100 bg-primary-50/40 py-3 pl-12 pr-4 text-sm text-primary-800 outline-none transition focus:border-primary-500 dark:border-primary-700/50 dark:bg-primary-900/50 dark:text-white dark:placeholder:text-primary-100/50"
                 />
               </div>
-              <div className="flex flex-wrap gap-3">
+
+              <div className="grid gap-3 md:grid-cols-3 xl:w-auto xl:min-w-[540px]">
                 <select
                   value={filters.trade}
-                  onChange={(e) => setFilters({ ...filters, trade: e.target.value })}
-                  className="px-4 py-3 rounded-xl border border-paper-dim bg-white focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                  onChange={(event) => setFilters({ ...filters, trade: event.target.value })}
+                  className="rounded-full border border-primary-100 bg-primary-50/40 px-4 py-3 text-sm text-primary-800 outline-none transition focus:border-primary-500 dark:border-primary-700/50 dark:bg-primary-900/50 dark:text-white"
                 >
-                  <option value="">All Trades</option>
-                  {trades.map(trade => (
-                    <option key={trade} value={trade}>{trade}</option>
+                  <option value="">{t('findWorkers.serviceDefault')}</option>
+                  {trades.map((trade) => (
+                    <option key={trade} value={trade}>{tradeLabel(trade)}</option>
                   ))}
                 </select>
+
                 <select
                   value={filters.location}
-                  onChange={(e) => setFilters({ ...filters, location: e.target.value })}
-                  className="px-4 py-3 rounded-xl border border-paper-dim bg-white focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                  onChange={(event) => setFilters({ ...filters, location: event.target.value })}
+                  className="rounded-full border border-primary-100 bg-primary-50/40 px-4 py-3 text-sm text-primary-800 outline-none transition focus:border-primary-500 dark:border-primary-700/50 dark:bg-primary-900/50 dark:text-white"
                 >
-                  <option value="">All Locations</option>
-                  {locations.map(location => (
+                  <option value="">{t('findWorkers.locationDefault')}</option>
+                  {locations.map((location) => (
                     <option key={location} value={location}>{location}</option>
                   ))}
                 </select>
+
                 <select
                   value={filters.rating}
-                  onChange={(e) => setFilters({ ...filters, rating: e.target.value })}
-                  className="px-4 py-3 rounded-xl border border-paper-dim bg-white focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                  onChange={(event) => setFilters({ ...filters, rating: event.target.value })}
+                  className="rounded-full border border-primary-100 bg-primary-50/40 px-4 py-3 text-sm text-primary-800 outline-none transition focus:border-primary-500 dark:border-primary-700/50 dark:bg-primary-900/50 dark:text-white"
                 >
-                  <option value="">All Ratings</option>
-                  <option value="4.5">⭐ 4.5+</option>
-                  <option value="4.0">⭐ 4.0+</option>
-                  <option value="3.5">⭐ 3.5+</option>
+                  <option value="">{t('findWorkers.ratingDefault')}</option>
+                  <option value="4.5">4.5+</option>
+                  <option value="4.0">4.0+</option>
+                  <option value="3.5">3.5+</option>
                 </select>
-                {(searchTerm || filters.trade || filters.location || filters.rating) && (
-                  <button
-                    onClick={clearFilters}
-                    className="px-4 py-3 rounded-xl border border-paper-dim hover:bg-paper-dim transition-colors flex items-center gap-2"
-                  >
-                    <X size={18} />
-                    Clear
-                  </button>
-                )}
               </div>
+
+              {(searchTerm || filters.trade || filters.location || filters.rating) && (
+                <button onClick={clearFilters} className="inline-flex items-center justify-center gap-2 rounded-full border border-primary-100 bg-primary-50 px-4 py-3 text-sm font-medium text-primary-700 transition hover:bg-primary-100 dark:border-primary-700/50 dark:bg-primary-700/50 dark:text-primary-100 dark:hover:bg-primary-700">
+                  <X size={16} /> {t('findWorkers.clear')}
+                </button>
+              )}
             </div>
           </div>
 
-          {/* Results */}
           <div>
-            <p className="text-ink/60 mb-6">
-              Found {filteredWorkers.length} worker{filteredWorkers.length !== 1 ? 's' : ''}
+            <p className="mb-6 text-sm text-primary-700/75 dark:text-primary-100/75">
+              {filteredWorkers.length === 1 ? t('findWorkers.showingOne') : t('findWorkers.showingMany', { count: filteredWorkers.length })}
             </p>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
               {filteredWorkers.map((worker) => (
                 <Reveal key={worker.id}>
                   <WorkerCard worker={worker} />
                 </Reveal>
               ))}
             </div>
+
             {filteredWorkers.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-ink/60">No workers found matching your criteria.</p>
-                <button
-                  onClick={clearFilters}
-                  className="text-primary-500 font-medium mt-2 hover:underline"
-                >
-                  Clear filters
-                </button>
+              <div className="mt-8 rounded-[28px] border border-dashed border-primary-200 bg-primary-50/40 p-10 text-center text-primary-700 dark:border-primary-700 dark:bg-primary-800/40 dark:text-primary-100">
+                {t('findWorkers.noResults')}
               </div>
             )}
+          </div>
+
+          <div className="mt-12 flex items-center justify-center gap-3">
+            {[1, 2, 3, 4].map((page) => (
+              <button
+                key={page}
+                className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-medium ${
+                  page === 1
+                    ? 'bg-primary-700 text-white dark:bg-primary-400 dark:text-primary-900'
+                    : 'bg-primary-50 text-primary-700 dark:bg-primary-800 dark:text-primary-100'
+                }`}
+              >
+                {page}
+              </button>
+            ))}
           </div>
         </div>
       </section>

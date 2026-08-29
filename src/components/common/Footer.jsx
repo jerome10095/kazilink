@@ -1,61 +1,120 @@
 import { Link } from 'react-router-dom';
-import { Briefcase, Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Youtube, ArrowRight, Heart } from 'lucide-react';
+import { Briefcase, Facebook, Twitter, Linkedin, Instagram, ArrowRight } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
-const quickLinks = [
-  { to: '/about', label: 'About Us' },
-  { to: '/services', label: 'Services' },
-  { to: '/find-workers', label: 'Find Workers' },
-  { to: '/employers', label: 'For Employers' },
-  { to: '/training', label: 'Training' },
-  { to: '/success-stories', label: 'Success Stories' },
-];
-
-const resources = [
-  { to: '/how-it-works', label: 'How It Works' },
-  { to: '/impact', label: 'Our Impact' },
-  { to: '/careers', label: 'Careers' },
-  { to: '/contact', label: 'Contact' },
-  { to: '/privacy', label: 'Privacy Policy' },
-  { to: '/terms', label: 'Terms of Service' },
+const socialLinks = [
+  { href: '#', icon: Facebook, label: 'Facebook' },
+  { href: '#', icon: Twitter, label: 'Twitter/X' },
+  { href: '#', icon: Linkedin, label: 'LinkedIn' },
+  { href: '#', icon: Instagram, label: 'Instagram' },
 ];
 
 export default function Footer() {
+  const { t } = useLanguage();
+
+  const platformLinks = [
+    { to: '/', label: t('nav.home') },
+    { to: '/services', label: t('nav.services') },
+    { to: '/find-workers', label: t('nav.workers') },
+    { to: '/about', label: t('nav.about') },
+  ];
+
+  const companyLinks = [
+    { to: '/about', label: t('footer.aboutUs') },
+    { to: '/impact', label: t('nav.impact') },
+    { to: '/blog', label: t('footer.blog') },
+    { to: '/careers', label: t('nav.careers') },
+  ];
+
+  const supportLinks = [
+    { to: '/contact', label: t('footer.contactUs') },
+    { to: '/help', label: t('footer.helpCenter') },
+    { to: '/privacy', label: t('footer.privacyPolicy') },
+    { to: '/terms', label: t('footer.termsOfService') },
+  ];
+
   return (
-    <footer className="bg-ink text-paper/80">
+    <footer className="bg-primary-800 text-primary-50">
       <div className="flag-strip">
         <div className="black" />
         <div className="yellow" />
         <div className="green" />
       </div>
 
-      <div className="container-custom py-16">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
-          {/* Brand */}
-          <div>
-            <Link to="/" className="flex items-center gap-2 mb-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-500 text-white">
+      <div className="container-custom py-14">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
+          <div className="lg:col-span-2">
+            <Link to="/" className="mb-5 inline-flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary-500 text-white shadow-soft">
                 <Briefcase size={18} />
               </div>
-              <span className="font-display text-xl font-bold text-white">
-                Kazi<span className="text-primary-400">Link</span>
+              <span className="text-2xl font-bold text-white">
+                Kazi<span className="text-primary-200">Link</span>
               </span>
             </Link>
-            <p className="text-sm text-paper/60 leading-relaxed">
-              Connecting skilled workers with trusted employers through verification, 
-              professional development, and ongoing support.
+            <p className="max-w-sm text-sm leading-relaxed text-primary-100/80">
+              {t('footer.tagline')}
             </p>
-            <div className="flex gap-3 mt-4">
-              <a href="#" className="p-2 rounded-full bg-white/5 text-paper/40 hover:bg-primary-500/20 hover:text-primary-400 transition-colors">
-                <Facebook size={18} />
-              </a>
-              <a href="#" className="p-2 rounded-full bg-white/5 text-paper/40 hover:bg-primary-500/20 hover:text-primary-400 transition-colors">
-                <Twitter size={18} />
-              </a>
-              <a href="#" className="p-2 rounded-full bg-white/5 text-paper/40 hover:bg-primary-500/20 hover:text-primary-400 transition-colors">
-                <Linkedin size={18} />
-              </a>
+
+            <div className="mt-6 flex items-center gap-3">
+              {socialLinks.map(({ href, icon: Icon, label }) => (
+                <a
+                  key={label}
+                  href={href}
+                  aria-label={label}
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-primary-500 bg-white/5 text-primary-100 transition-all duration-300 hover:border-primary-200 hover:bg-primary-500"
+                >
+                  <Icon size={17} />
+                </a>
+              ))}
             </div>
           </div>
+
+          <div>
+            <h3 className="mb-5 text-base font-semibold text-white">{t('footer.platform')}</h3>
+            <ul className="space-y-3 text-sm text-primary-100/80">
+              {platformLinks.map((link) => (
+                <li key={link.to}>
+                  <Link to={link.to} className="inline-flex items-center gap-2 transition-colors hover:text-white">
+                    <ArrowRight size={14} />
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="mb-5 text-base font-semibold text-white">{t('footer.company')}</h3>
+            <ul className="space-y-3 text-sm text-primary-100/80">
+              {companyLinks.map((link) => (
+                <li key={link.to}>
+                  <Link to={link.to} className="inline-flex items-center gap-2 transition-colors hover:text-white">
+                    <ArrowRight size={14} />
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="mb-5 text-base font-semibold text-white">{t('footer.support')}</h3>
+            <ul className="space-y-3 text-sm text-primary-100/80">
+              {supportLinks.map((link) => (
+                <li key={link.to}>
+                  <Link to={link.to} className="inline-flex items-center gap-2 transition-colors hover:text-white">
+                    <ArrowRight size={14} />
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <div className="mt-12 flex flex-col gap-3 border-t border-primary-500/40 pt-6 text-sm text-primary-100/80 md:flex-row md:items-center md:justify-between">
+          <p>{t('footer.rights')}</p>
         </div>
       </div>
     </footer>

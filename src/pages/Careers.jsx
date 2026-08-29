@@ -1,90 +1,54 @@
 import { Helmet } from 'react-helmet-async';
-import Reveal from '../components/animations/Reveal';
-import {
-  Users,
-  GraduationCap,
-  Briefcase,
-  Heart,
-  ArrowRight,
-} from 'lucide-react';
 import { Link } from 'react-router-dom';
-
-const opportunities = [
-  {
-    icon: Users,
-    title: 'Join Our Team',
-    desc: 'Work with us to transform the workforce landscape.',
-  },
-  {
-    icon: GraduationCap,
-    title: 'Become a Trainer',
-    desc: 'Share your expertise and help others grow.',
-  },
-  {
-    icon: Briefcase,
-    title: 'Partner With Us',
-    desc: 'Collaborate with KaziLink to create more opportunities.',
-  },
-  {
-    icon: Heart,
-    title: 'Volunteer',
-    desc: 'Contribute your skills to our mission.',
-  },
-];
+import Reveal from '../components/animations/Reveal';
+import { Users, BookOpen, Briefcase, Heart, ArrowRight } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Careers() {
+  const { t } = useLanguage();
+
+  const opportunities = [
+    { icon: Users, title: t('careers.opp1Title'), desc: t('careers.opp1Desc') },
+    { icon: BookOpen, title: t('careers.opp2Title'), desc: t('careers.opp2Desc') },
+    { icon: Briefcase, title: t('careers.opp3Title'), desc: t('careers.opp3Desc') },
+    { icon: Heart, title: t('careers.opp4Title'), desc: t('careers.opp4Desc') },
+  ];
+
   return (
     <>
       <Helmet>
         <title>Careers - Join the KaziLink Team</title>
       </Helmet>
 
-      <section className="section-padding">
+      <section className="section-padding bg-primary-50/40 dark:bg-primary-800/40">
         <div className="container-custom">
           <Reveal>
-            <div className="text-center max-w-3xl mx-auto mb-16">
-              <span className="text-primary-500 font-semibold text-sm uppercase tracking-wider">
-                Careers
+            <div className="mx-auto max-w-3xl text-center">
+              <span className="inline-block rounded-full bg-primary-100 px-4 py-1.5 text-sm font-semibold uppercase tracking-[0.2em] text-primary-700 dark:bg-primary-700 dark:text-primary-100">
+                {t('careers.badge')}
               </span>
-
-              <h1 className="heading-xl mt-2">
-                Join KaziLink
-              </h1>
-
-              <p className="text-lg text-ink/60 mt-4">
-                Be part of a team that's transforming how people connect with
-                opportunity.
+              <h1 className="mt-3 text-4xl font-bold text-primary-800 md:text-5xl dark:text-white">{t('careers.heading')}</h1>
+              <p className="mt-4 text-lg text-primary-700/75 dark:text-primary-100/75">
+                {t('careers.paragraph')}
               </p>
             </div>
           </Reveal>
 
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="mt-12 grid gap-6 md:grid-cols-2">
             {opportunities.map((opp, index) => {
               const Icon = opp.icon;
-
               return (
-                <Reveal key={index} delay={index * 0.1}>
-                  <div className="card p-6 card-hover">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-50 text-primary-500">
-                        <Icon size={24} />
+                <Reveal key={opp.title} delay={index * 0.08}>
+                  <div className="card p-6">
+                    <div className="mb-4 flex items-center gap-3">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-100 text-primary-700 dark:bg-primary-700 dark:text-primary-100">
+                        <Icon size={22} />
                       </div>
-
-                      <h3 className="text-xl font-semibold">
-                        {opp.title}
-                      </h3>
+                      <h3 className="text-2xl font-semibold text-primary-800 dark:text-white">{opp.title}</h3>
                     </div>
-
-                    <p className="text-ink/60 leading-relaxed">
-                      {opp.desc}
-                    </p>
-
-                    <Link
-                      to="/contact"
-                      className="mt-4 text-primary-500 font-medium hover:text-primary-600 transition-colors inline-flex items-center gap-1"
-                    >
-                      Learn More
-                      <ArrowRight size={16} />
+                    <p className="text-sm leading-relaxed text-primary-700/75 dark:text-primary-100/70">{opp.desc}</p>
+                    <Link to="/contact" className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-primary-700 dark:text-primary-200">
+                      {t('common.learnMore')} <ArrowRight size={16} />
                     </Link>
                   </div>
                 </Reveal>
@@ -93,18 +57,13 @@ export default function Careers() {
           </div>
 
           <Reveal>
-            <div className="mt-16 card p-8 bg-primary-50 border-primary-200 text-center">
-              <h2 className="heading-md mb-4">
-                Ready to Make an Impact?
-              </h2>
-
-              <p className="text-ink/60 max-w-2xl mx-auto mb-6">
-                Join our mission to connect skills with opportunity. Let's
-                build the future together.
+            <div className="mt-16 rounded-[30px] border border-primary-100 bg-white p-8 text-center shadow-soft dark:border-primary-700/50 dark:bg-primary-800">
+              <h2 className="text-3xl font-bold text-primary-800 dark:text-white">{t('careers.ctaHeading')}</h2>
+              <p className="mx-auto mt-3 max-w-2xl text-primary-700/75 dark:text-primary-100/75">
+                {t('careers.ctaParagraph')}
               </p>
-
-              <Link to="/contact" className="btn-primary">
-                Get in Touch
+              <Link to="/contact" className="btn-primary mt-6">
+                {t('common.contactUs')}
               </Link>
             </div>
           </Reveal>

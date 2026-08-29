@@ -1,21 +1,26 @@
 import { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { Menu, X, Briefcase, User, LogIn, ChevronDown, Bell, MessageCircle } from 'lucide-react';
+import { Menu, X, Briefcase, LogIn, Sun, Moon, Languages } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-
-const navLinks = [
-  { to: '/about', label: 'About' },
-  { to: '/services', label: 'Services' },
-  { to: '/find-workers', label: 'Find Workers' },
-  { to: '/employers', label: 'Employers' },
-  { to: '/training', label: 'Training' },
-  { to: '/impact', label: 'Impact' },
-];
+import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const { theme, toggleTheme } = useTheme();
+  const { lang, toggleLanguage, t } = useLanguage();
+
+  const navLinks = [
+    { to: '/', label: t('nav.home') },
+    { to: '/services', label: t('nav.services') },
+    { to: '/find-workers', label: t('nav.workers') },
+    { to: '/about', label: t('nav.about') },
+    { to: '/impact', label: t('nav.impact') },
+    { to: '/careers', label: t('nav.careers') },
+    { to: '/contact', label: t('nav.contact') },
+  ];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -30,9 +35,11 @@ export default function Navbar() {
   }, [location]);
 
   return (
-    <header 
+    <header
       className={`fixed top-0 z-50 w-full transition-all duration-300 ${
-        scrolled ? 'bg-white/95 backdrop-blur-md shadow-md' : 'bg-white/80 backdrop-blur-sm'
+        scrolled
+          ? 'bg-white/90 shadow-soft backdrop-blur-md dark:bg-primary-900/90'
+          : 'bg-white/80 backdrop-blur-sm dark:bg-primary-900/80'
       }`}
     >
       <div className="flag-strip">
@@ -42,28 +49,26 @@ export default function Navbar() {
       </div>
 
       <div className="container-custom">
-        <div className="flex h-20 items-center justify-between">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-500 text-white shadow-lg shadow-primary-500/30 group-hover:shadow-primary-500/50 transition-all">
-              <Briefcase size={20} strokeWidth={2.5} />
+        <div className="flex h-20 items-center justify-between gap-4">
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary-700 text-white shadow-soft transition-transform duration-300 group-hover:scale-105 dark:bg-primary-400 dark:text-primary-900">
+              <Briefcase size={18} strokeWidth={2.5} />
             </div>
-            <span className="font-display text-2xl font-bold tracking-tight text-ink">
-              Kazi<span className="text-primary-500">Link</span>
+            <span className="text-2xl font-bold tracking-tight text-primary-800 dark:text-white">
+              Kazi<span className="text-primary-500 dark:text-primary-300">Link</span>
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-1">
+          <nav className="hidden items-center gap-1 rounded-full border border-primary-100 bg-white/80 px-2 py-2 shadow-soft lg:flex dark:border-primary-700/50 dark:bg-primary-800/60">
             {navLinks.map((link) => (
               <NavLink
                 key={link.to}
                 to={link.to}
                 className={({ isActive }) =>
-                  `px-4 py-2 text-sm font-medium rounded-lg transition-all ${
-                    isActive 
-                      ? 'bg-primary-500 text-white shadow-sm' 
-                      : 'text-ink/70 hover:bg-primary-50 hover:text-primary-600'
+                  `rounded-full px-4 py-2 text-sm font-medium transition-all ${
+                    isActive
+                      ? 'bg-primary-700 text-white shadow-soft dark:bg-primary-400 dark:text-primary-900'
+                      : 'text-primary-700 hover:bg-primary-50 hover:text-primary-800 dark:text-primary-100 dark:hover:bg-primary-700/60 dark:hover:text-white'
                   }`
                 }
               >
@@ -72,53 +77,69 @@ export default function Navbar() {
             ))}
           </nav>
 
-          {/* Right Actions */}
-          <div className="hidden lg:flex items-center gap-2">
-            <button className="p-2 rounded-lg hover:bg-primary-50 text-ink/60 hover:text-ink transition-colors relative">
-              <Bell size={20} />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-primary-500 rounded-full animate-pulse" />
+          <div className="hidden items-center gap-2 lg:flex">
+            <button
+              onClick={toggleLanguage}
+              className="flex h-11 items-center gap-1.5 rounded-full border border-primary-100 bg-white px-3 text-sm font-semibold text-primary-700 shadow-soft transition-colors hover:bg-primary-50 dark:border-primary-700/50 dark:bg-primary-800 dark:text-primary-100 dark:hover:bg-primary-700"
+              aria-label={lang === 'en' ? t('nav.switchToKinyarwanda') : t('nav.switchToEnglish')}
+            >
+              <Languages size={16} />
+              {lang === 'en' ? 'EN' : 'RW'}
             </button>
-            <button className="p-2 rounded-lg hover:bg-primary-50 text-ink/60 hover:text-ink transition-colors relative">
-              <MessageCircle size={20} />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-secondary-500 rounded-full" />
+
+            <button
+              onClick={toggleTheme}
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-primary-100 bg-white text-primary-700 shadow-soft transition-colors hover:bg-primary-50 dark:border-primary-700/50 dark:bg-primary-800 dark:text-primary-100 dark:hover:bg-primary-700"
+              aria-label={theme === 'dark' ? t('nav.switchToLight') : t('nav.switchToDark')}
+            >
+              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
             </button>
-            
-            <div className="w-px h-6 bg-paper-dim mx-2" />
-            
+
             <Link
               to="/login"
-              className="flex items-center gap-2 text-sm font-medium text-ink/70 hover:text-ink transition-colors px-3 py-2 rounded-lg hover:bg-primary-50"
+              className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-primary-700 transition-colors hover:bg-primary-50 dark:text-primary-100 dark:hover:bg-primary-800"
             >
               <LogIn size={16} />
-              Log In
+              {t('nav.login')}
             </Link>
-            <Link
-              to="/register"
-              className="bg-primary-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-primary-600 transition-all shadow-md hover:shadow-lg"
-            >
-              Get Started
+            <Link to="/register" className="btn-primary text-sm">
+              {t('nav.signup')}
             </Link>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden p-2 rounded-lg hover:bg-primary-50 transition-colors"
-            aria-label={isOpen ? 'Close menu' : 'Open menu'}
-          >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          <div className="flex items-center gap-2 lg:hidden">
+            <button
+              onClick={toggleLanguage}
+              className="flex h-11 items-center gap-1 rounded-full border border-primary-100 bg-white px-3 text-sm font-semibold text-primary-700 shadow-soft transition-colors hover:bg-primary-50 dark:border-primary-700/50 dark:bg-primary-800 dark:text-primary-100"
+              aria-label={lang === 'en' ? t('nav.switchToKinyarwanda') : t('nav.switchToEnglish')}
+            >
+              {lang === 'en' ? 'EN' : 'RW'}
+            </button>
+            <button
+              onClick={toggleTheme}
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-primary-100 bg-white text-primary-700 shadow-soft transition-colors hover:bg-primary-50 dark:border-primary-700/50 dark:bg-primary-800 dark:text-primary-100"
+              aria-label={theme === 'dark' ? t('nav.switchToLight') : t('nav.switchToDark')}
+            >
+              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-primary-100 bg-white text-primary-800 shadow-soft transition-colors hover:bg-primary-50 dark:border-primary-700/50 dark:bg-primary-800 dark:text-primary-100"
+              aria-label={isOpen ? t('nav.closeMenu') : t('nav.openMenu')}
+            >
+              {isOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden bg-white border-t border-paper-dim"
+            className="border-t border-primary-100 bg-white/95 lg:hidden dark:border-primary-700/50 dark:bg-primary-900/95"
           >
             <div className="container-custom py-4">
               <nav className="flex flex-col gap-2">
@@ -127,29 +148,22 @@ export default function Navbar() {
                     key={link.to}
                     to={link.to}
                     className={({ isActive }) =>
-                      `px-4 py-3 text-base font-medium rounded-lg transition-all ${
-                        isActive 
-                          ? 'bg-primary-50 text-primary-600' 
-                          : 'text-ink/70 hover:bg-primary-50'
+                      `rounded-2xl px-4 py-3 text-base font-medium transition-all ${
+                        isActive
+                          ? 'bg-primary-700 text-white dark:bg-primary-400 dark:text-primary-900'
+                          : 'text-primary-700 hover:bg-primary-50 dark:text-primary-100 dark:hover:bg-primary-800'
                       }`
                     }
                   >
                     {link.label}
                   </NavLink>
                 ))}
-                <div className="mt-4 flex flex-col gap-3 border-t border-paper-dim pt-4">
-                  <Link
-                    to="/login"
-                    className="flex items-center justify-center gap-2 text-sm font-medium text-ink/70 hover:text-ink transition-colors"
-                  >
-                    <LogIn size={16} />
-                    Log In
+                <div className="mt-4 flex flex-col gap-3 border-t border-primary-100 pt-4 dark:border-primary-700/50">
+                  <Link to="/login" className="text-center text-sm font-medium text-primary-700 dark:text-primary-100">
+                    {t('nav.login')}
                   </Link>
-                  <Link
-                    to="/register"
-                    className="btn-primary text-center text-sm"
-                  >
-                    Get Started
+                  <Link to="/register" className="btn-primary text-sm">
+                    {t('nav.signup')}
                   </Link>
                 </div>
               </nav>

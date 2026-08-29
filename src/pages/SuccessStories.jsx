@@ -1,71 +1,39 @@
 import { Helmet } from 'react-helmet-async';
 import Reveal from '../components/animations/Reveal';
 import { Star, Quote, Award, Users, Briefcase } from 'lucide-react';
-
-const stories = [
-  {
-    id: 1,
-    type: 'worker',
-    name: 'Jean Claude',
-    role: 'Electrician',
-    quote: 'KaziLink helped me find work that values my skills. The verification process gave me credibility and opened doors to better opportunities.',
-    icon: Award,
-    color: 'primary'
-  },
-  {
-    id: 2,
-    type: 'employer',
-    name: 'ABC Construction',
-    role: 'Construction Company',
-    quote: 'We found reliable workers in days instead of weeks. KaziLink\'s verification system gave us the confidence to hire quickly.',
-    icon: Briefcase,
-    color: 'secondary'
-  },
-  {
-    id: 3,
-    type: 'community',
-    name: 'Kigali Community',
-    role: 'Community Impact',
-    quote: 'KaziLink has transformed our community by connecting skilled workers with local employers, creating sustainable livelihoods.',
-    icon: Users,
-    color: 'accent'
-  },
-  {
-    id: 4,
-    type: 'worker',
-    name: 'Sarah Mukamana',
-    role: 'Cleaner',
-    quote: 'The training I received through KaziLink gave me the confidence to start my own cleaning business. I now employ 5 people!',
-    icon: Award,
-    color: 'primary'
-  },
-  {
-    id: 5,
-    type: 'employer',
-    name: 'XYZ Hotel',
-    role: 'Hotel Chain',
-    quote: 'KaziLink\'s workers are professional, reliable, and always on time. It\'s been a game-changer for our operations.',
-    icon: Briefcase,
-    color: 'secondary'
-  },
-];
+import { useLanguage } from '../context/LanguageContext';
 
 export default function SuccessStories() {
+  const { t } = useLanguage();
+
+  const stories = [
+    { id: 1, type: 'worker', name: 'Jean Claude', role: 'Electrician', quote: t('successStories.s1Quote'), icon: Award, color: 'primary' },
+    { id: 2, type: 'employer', name: 'ABC Construction', role: 'Construction Company', quote: t('successStories.s2Quote'), icon: Briefcase, color: 'secondary' },
+    { id: 3, type: 'community', name: t('successStories.s3Name'), role: t('successStories.s3Role'), quote: t('successStories.s3Quote'), icon: Users, color: 'accent' },
+    { id: 4, type: 'worker', name: 'Sarah Mukamana', role: 'Cleaner', quote: t('successStories.s4Quote'), icon: Award, color: 'primary' },
+    { id: 5, type: 'employer', name: 'XYZ Hotel', role: 'Hotel Chain', quote: t('successStories.s5Quote'), icon: Briefcase, color: 'secondary' },
+  ];
+
+  const typeLabel = {
+    worker: t('successStories.typeWorker'),
+    employer: t('successStories.typeEmployer'),
+    community: t('successStories.typeCommunity'),
+  };
+
   return (
     <>
       <Helmet>
         <title>Success Stories - Real Impact | KaziLink</title>
       </Helmet>
 
-      <section className="section-padding">
+      <section className="section-padding dark:bg-primary-900">
         <div className="container-custom">
           <Reveal>
             <div className="text-center max-w-3xl mx-auto mb-16">
-              <span className="text-primary-500 font-semibold text-sm uppercase tracking-wider">Real Impact</span>
-              <h1 className="heading-xl mt-2">Success Stories</h1>
-              <p className="text-lg text-ink/60 mt-4">
-                Hear from workers, employers, and communities whose lives and businesses 
-                have been transformed by KaziLink.
+              <span className="text-primary-500 font-semibold text-sm uppercase tracking-wider dark:text-primary-300">{t('successStories.badge')}</span>
+              <h1 className="heading-xl mt-2 dark:text-white">{t('successStories.heading')}</h1>
+              <p className="text-lg text-ink/60 mt-4 dark:text-primary-100/70">
+                {t('successStories.paragraph')}
               </p>
             </div>
           </Reveal>
@@ -75,17 +43,17 @@ export default function SuccessStories() {
               <Reveal key={story.id} delay={index * 0.1}>
                 <div className="card p-6 card-hover">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-${story.color}-100 text-${story.color}-500`}>
+                    <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-${story.color}-100 text-${story.color}-500 dark:bg-${story.color}-700/60 dark:text-${story.color}-200`}>
                       <story.icon size={24} />
                     </div>
                     <div>
-                      <h4 className="font-semibold capitalize">{story.type} Story</h4>
-                      <p className="text-sm text-ink/60">{story.name} - {story.role}</p>
+                      <h4 className="font-semibold dark:text-white">{typeLabel[story.type]}</h4>
+                      <p className="text-sm text-ink/60 dark:text-primary-100/70">{story.name} - {story.role}</p>
                     </div>
                   </div>
                   <div className="relative">
-                    <Quote size={20} className="text-primary-200 absolute -top-1 -left-1" />
-                    <p className="text-ink/70 leading-relaxed pl-6">
+                    <Quote size={20} className="text-primary-200 absolute -top-1 -left-1 dark:text-primary-600" />
+                    <p className="text-ink/70 leading-relaxed pl-6 dark:text-primary-100/80">
                       "{story.quote}"
                     </p>
                   </div>
