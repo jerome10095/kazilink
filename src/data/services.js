@@ -12,7 +12,7 @@ export const services = [
   {
     id: 2,
     title: 'Electrical',
-    titleRw: 'Amashanyarazi',
+    titleRw: "Umukozi w'amashanyarazi",
     description: 'Wiring, appliance installation, circuit repair, and safe electrical maintenance.',
     descriptionRw: "Kuvubika amashanyarazi, gushyiraho ibikoresho bikoresha amashanyarazi, gusana imiyoboro y'amashanyarazi, no kubungabunga amashanyarazi mu buryo bwizewe.",
     icon: 'Zap',
@@ -32,7 +32,7 @@ export const services = [
   {
     id: 4,
     title: 'Painting',
-    titleRw: 'Gusiga Irangi',
+    titleRw: "Umusizi w'amarangi",
     description: 'Interior and exterior finishes, surface prep, repairs, and decorative projects.',
     descriptionRw: "Gusiga imbere n'inyuma y'inzu, gutegura ubuso, gusana, n'imishinga yo kwisiga.",
     icon: 'Paintbrush2',
