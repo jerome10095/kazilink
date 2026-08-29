@@ -90,7 +90,7 @@ export default {
     visionDesc: "Kuba urubuga rw'abakozi rutwara isoko mu Rwanda no hanze yarwo, duhindura uburyo akazi kaboneka kandi kizerwa.",
     valuesTitle: 'Indangagaciro',
     valuesDesc: "Icyizere, ubunyangamugayo, ubuhanga buhanitse, n'ingaruka nibyo biyobora uburyo dufasha abakozi n'abakoresha buri munsi.",
-    impactTitle: 'Ingaruka',
+    impactTitle: 'Umusaruro',
     impactDesc: "Kubaka imiryango ikomeye binyuze mu mahirwe, ubumenyi, n'iterambere ry'ubukungu rirambye.",
     coreValuesHeading: 'Indangagaciro Zacu',
     valueTrustTitle: 'Icyizere',
@@ -99,7 +99,7 @@ export default {
     valueIntegrityDesc: "Ibikorwa bishingiye ku kutabogama n'amahame yizewe muri buri musanganya.",
     valueExcellenceTitle: 'Ubuhanga Buhanitse',
     valueExcellenceDesc: "Serivisi z'umwimerere n'abakozi babifitiye ubumenyi batanga ibisubizo.",
-    valueImpactTitle: 'Ingaruka',
+    valueImpactTitle: 'Umusaruro',
     valueImpactDesc: "Gufasha abaturage gutera imbere binyuze mu kazi gafite agaciro n'amahirwe.",
     statWorkers: 'Abakozi',
     statEmployers: 'Abakoresha',
@@ -172,10 +172,10 @@ export default {
   },
 
   impact: {
-    badge: 'Ingaruka Zacu',
+    badge: 'Umusaruro Wacu',
     heading: "Guteza Imbere Imibereho y'Abaturage mu Rwanda Hose.",
     paragraph: "KaziLink irema amahirwe arambye ku bakozi, abakoresha, n'abaturage binyuze mu guhuza ubumenyi n'akazi gafite agaciro.",
-    communityTitle: 'Ingaruka ku Baturage',
+    communityTitle: 'Umusaruro ku Baturage',
     communityDesc:
       "KaziLink iha abakozi bo mu gace ubushobozi binyuze mu mahirwe yizewe, kugaragara neza, n'uburyo bwizewe bwo gushaka akazi, bigafasha abaturage kubaka ubuzima bukomeye n'ubukungu bushimangiye.",
     economicTitle: "Iterambere ry'Ubukungu",
@@ -239,7 +239,7 @@ export default {
   },
 
   successStories: {
-    badge: 'Ingaruka Nyakuri',
+    badge: 'Umusaruro Nyakuri',
     heading: "Inkuru z'Intsinzi",
     paragraph: "Umva inkuru z'abakozi, abakoresha, n'abaturage babonye impinduka mu buzima n'ubucuruzi bwabo binyuze kuri KaziLink.",
     typeWorker: "Inkuru y'Umukozi",
@@ -251,7 +251,7 @@ export default {
     s4Quote: "Amahugurwa nabonye kuri KaziLink yampaye icyizere cyo gutangira ubucuruzi bwanjye bwo gusukura. Ubu mfite abakozi 5!",
     s5Quote: "Abakozi ba KaziLink ni inzobere, bizewe, kandi bahora bageze ku gihe. Byahinduye rwose uko dukora.",
     s3Name: "Abaturage b'i Kigali",
-    s3Role: 'Ingaruka ku Baturage',
+    s3Role: 'Umusaruro ku Baturage',
   },
 
   training: {
