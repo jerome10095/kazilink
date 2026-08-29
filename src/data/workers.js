@@ -35,7 +35,7 @@ export const workers = [
     id: 3,
     name: 'David Niyonzima',
     trade: 'Plumber',
-    tradeRw: 'Umukozi wa Plomberi',
+    tradeRw: 'Umuporombiye',
     rating: 4.7,
     reviewCount: 85,
     location: 'Kigali, Rwanda',
@@ -44,7 +44,7 @@ export const workers = [
     available: false,
     rate: 13000,
     bio: 'Professional plumber with extensive experience in residential and commercial plumbing systems.',
-    bioRw: "Umukozi w'inzobere muri plomberi ufite uburambe buhagije mu mazu no mu bigo by'ubucuruzi.",
+    bioRw: "Umuporombiye w'inzobere ufite uburambe buhagije mu mazu no mu bigo by'ubucuruzi.",
     skills: ['Pipe Installation', 'Leak Repair', 'Maintenance']
   },
   {

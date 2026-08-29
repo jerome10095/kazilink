@@ -2,7 +2,7 @@ export const services = [
   {
     id: 1,
     title: 'Plumbing',
-    titleRw: 'Plomberi',
+    titleRw: 'Umuporombiye',
     description: 'Pipe fitting, leak repairs, bathroom and kitchen installations, and urgent plumbing support.',
     descriptionRw: "Gushyira imiyoboro y'amazi, gusana ibyuya, kwinjiza ibikoresho mu bwiherero no mu gikoni, n'ubufasha bwihutirwa mu byerekeye amazi.",
     icon: 'Wrench',
