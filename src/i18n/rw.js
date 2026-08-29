@@ -5,7 +5,7 @@ export default {
     workers: 'Abakozi',
     about: 'Abo turi bo',
     impact: 'Ingaruka',
-    careers: 'Akazi',
+    careers: 'Imyuga',
     contact: 'Twandikire',
     login: 'Injira',
     signup: 'Iyandikishe',
@@ -135,7 +135,7 @@ export default {
   },
 
   careers: {
-    badge: 'Akazi',
+    badge: 'Imyuga',
     heading: "Ifatanye n'Intego Yacu",
     paragraph: "Ba umwe mu itsinda rihindura uburyo bw'akazi maze rikarema amahirwe meza mu Rwanda hose.",
     opp1Title: 'Ifatanye n\'Itsinda Ryacu',
