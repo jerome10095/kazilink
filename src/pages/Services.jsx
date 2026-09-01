@@ -1,15 +1,36 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Search, SlidersHorizontal } from 'lucide-react';
 import Reveal from '../components/animations/Reveal';
 import ServiceCard from '../components/ui/ServiceCard';
-import { services } from '../data';
+import { LoadingState, ErrorState } from '../components/ui/AsyncState';
+import { api } from '../lib/api';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function Services() {
   const { t, pick } = useLanguage();
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('All');
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let cancelled = false;
+    api.getServices()
+      .then(({ services: rows }) => {
+        if (!cancelled) setServices(rows);
+      })
+      .catch(() => {
+        if (!cancelled) setError(t('common.loadError'));
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [t]);
 
   const categories = ['All', ...services.map((service) => service.title)];
   const categoryLabel = (value) => {
@@ -80,18 +101,25 @@ export default function Services() {
             </div>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {filteredServices.map((service, index) => (
-              <Reveal key={service.id} delay={index * 0.08}>
-                <ServiceCard service={service} />
-              </Reveal>
-            ))}
-          </div>
+          {loading && <LoadingState label={t('common.loading')} />}
+          {!loading && error && <ErrorState message={error} />}
 
-          {filteredServices.length === 0 && (
-            <div className="mt-8 rounded-[26px] border border-dashed border-primary-200 bg-primary-50/40 p-8 text-center text-primary-700 dark:border-primary-700 dark:bg-primary-800/40 dark:text-primary-100">
-              {t('services.noResults')}
-            </div>
+          {!loading && !error && (
+            <>
+              <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                {filteredServices.map((service, index) => (
+                  <Reveal key={service.id} delay={index * 0.08}>
+                    <ServiceCard service={service} />
+                  </Reveal>
+                ))}
+              </div>
+
+              {filteredServices.length === 0 && (
+                <div className="mt-8 rounded-[26px] border border-dashed border-primary-200 bg-primary-50/40 p-8 text-center text-primary-700 dark:border-primary-700 dark:bg-primary-800/40 dark:text-primary-100">
+                  {t('services.noResults')}
+                </div>
+              )}
+            </>
           )}
 
           <div className="mt-16 rounded-[30px] bg-primary-800 p-8 text-center text-white shadow-strong dark:bg-primary-700 md:p-12">

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
@@ -16,11 +17,37 @@ import Reveal from '../components/animations/Reveal';
 import Counter from '../components/animations/Counter';
 import WorkerCard from '../components/ui/WorkerCard';
 import ServiceCard from '../components/ui/ServiceCard';
-import { workers, services, stats } from '../data';
+import { LoadingState, ErrorState } from '../components/ui/AsyncState';
+import { api } from '../lib/api';
+import { stats } from '../data';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function Home() {
   const { t, pick } = useLanguage();
+  const [workers, setWorkers] = useState([]);
+  const [services, setServices] = useState([]);
+  const [loadError, setLoadError] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([api.getWorkers({ limit: 6 }), api.getServices()])
+      .then(([workersRes, servicesRes]) => {
+        if (cancelled) return;
+        setWorkers(workersRes.workers);
+        setServices(servicesRes.services);
+      })
+      .catch(() => {
+        if (!cancelled) setLoadError(t('common.loadError'));
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [t]);
+
   const featuredWorkers = workers.slice(0, 6);
   const heroWorkers = workers.filter((worker) => worker.verified).slice(0, 3);
   const heroStats = stats.slice(0, 3);
@@ -169,13 +196,17 @@ export default function Home() {
             </div>
           </Reveal>
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {services.map((service, index) => (
-              <Reveal key={service.id} delay={index * 0.1}>
-                <ServiceCard service={service} />
-              </Reveal>
-            ))}
-          </div>
+          {loading && <LoadingState label={t('common.loading')} />}
+          {!loading && loadError && <ErrorState message={loadError} />}
+          {!loading && !loadError && (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {services.map((service, index) => (
+                <Reveal key={service.id} delay={index * 0.1}>
+                  <ServiceCard service={service} />
+                </Reveal>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -250,13 +281,15 @@ export default function Home() {
             </div>
           </Reveal>
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {featuredWorkers.map((worker) => (
-              <Reveal key={worker.id}>
-                <WorkerCard worker={worker} />
-              </Reveal>
-            ))}
-          </div>
+          {!loading && !loadError && (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {featuredWorkers.map((worker) => (
+                <Reveal key={worker.id}>
+                  <WorkerCard worker={worker} />
+                </Reveal>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

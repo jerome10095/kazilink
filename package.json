@@ -4,12 +4,16 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "netlify dev",
+    "dev:vite": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint src --ext .js,.jsx,.ts,.tsx --report-unused-disable-directives"
+    "lint": "eslint src --ext .js,.jsx,.ts,.tsx --report-unused-disable-directives",
+    "db:seed": "node supabase/seed.mjs"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.45.4",
+    "dotenv": "^17.4.2",
     "framer-motion": "^10.16.4",
     "gsap": "^3.15.0",
     "leaflet": "^1.9.4",
@@ -31,6 +35,7 @@
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.4",
+    "netlify-cli": "^17.38.0",
     "postcss": "^8.4.31",
     "tailwindcss": "^3.3.5",
     "vite": "^4.5.0"

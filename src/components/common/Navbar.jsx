@@ -1,16 +1,24 @@
 import { useState, useEffect } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
-import { Menu, X, Briefcase, LogIn, Sun, Moon, Languages } from 'lucide-react';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X, Briefcase, LogIn, Sun, Moon, Languages, User, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
   const { lang, toggleLanguage, t } = useLanguage();
+  const { user, isAuthenticated, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   const navLinks = [
     { to: '/', label: t('nav.home') },
@@ -95,16 +103,34 @@ export default function Navbar() {
               {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
             </button>
 
-            <Link
-              to="/login"
-              className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-primary-700 transition-colors hover:bg-primary-50 dark:text-primary-100 dark:hover:bg-primary-800"
-            >
-              <LogIn size={16} />
-              {t('nav.login')}
-            </Link>
-            <Link to="/register" className="btn-primary text-sm">
-              {t('nav.signup')}
-            </Link>
+            {isAuthenticated ? (
+              <>
+                <Link
+                  to="/profile"
+                  className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-primary-700 transition-colors hover:bg-primary-50 dark:text-primary-100 dark:hover:bg-primary-800"
+                >
+                  <User size={16} />
+                  {user?.fullName?.split(' ')[0] ?? t('nav.profile')}
+                </Link>
+                <button onClick={handleLogout} className="btn-primary text-sm gap-2">
+                  <LogOut size={16} />
+                  {t('profile.logout')}
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-primary-700 transition-colors hover:bg-primary-50 dark:text-primary-100 dark:hover:bg-primary-800"
+                >
+                  <LogIn size={16} />
+                  {t('nav.login')}
+                </Link>
+                <Link to="/register" className="btn-primary text-sm">
+                  {t('nav.signup')}
+                </Link>
+              </>
+            )}
           </div>
 
           <div className="flex items-center gap-2 lg:hidden">
@@ -159,12 +185,26 @@ export default function Navbar() {
                   </NavLink>
                 ))}
                 <div className="mt-4 flex flex-col gap-3 border-t border-primary-100 pt-4 dark:border-primary-700/50">
-                  <Link to="/login" className="text-center text-sm font-medium text-primary-700 dark:text-primary-100">
-                    {t('nav.login')}
-                  </Link>
-                  <Link to="/register" className="btn-primary text-sm">
-                    {t('nav.signup')}
-                  </Link>
+                  {isAuthenticated ? (
+                    <>
+                      <Link to="/profile" className="text-center text-sm font-medium text-primary-700 dark:text-primary-100">
+                        {user?.fullName?.split(' ')[0] ?? t('nav.profile')}
+                      </Link>
+                      <button onClick={handleLogout} className="btn-primary text-sm justify-center gap-2">
+                        <LogOut size={16} />
+                        {t('profile.logout')}
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link to="/login" className="text-center text-sm font-medium text-primary-700 dark:text-primary-100">
+                        {t('nav.login')}
+                      </Link>
+                      <Link to="/register" className="btn-primary text-sm">
+                        {t('nav.signup')}
+                      </Link>
+                    </>
+                  )}
                 </div>
               </nav>
             </div>

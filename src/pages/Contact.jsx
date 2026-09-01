@@ -1,10 +1,36 @@
+import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Reveal from '../components/animations/Reveal';
-import { Mail, Phone, MapPin, Clock3, Send, Facebook, Twitter, Linkedin, Instagram } from 'lucide-react';
+import { Mail, Phone, MapPin, Clock3, Send, Facebook, Twitter, Linkedin, Instagram, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { api } from '../lib/api';
+
+const initialForm = { name: '', email: '', subject: '', message: '' };
 
 export default function Contact() {
   const { t } = useLanguage();
+  const [form, setForm] = useState(initialForm);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+  const [sending, setSending] = useState(false);
+
+  const updateField = (field) => (event) => setForm((prev) => ({ ...prev, [field]: event.target.value }));
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError('');
+    setSuccess(false);
+    setSending(true);
+    try {
+      await api.sendContactMessage(form);
+      setSuccess(true);
+      setForm(initialForm);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSending(false);
+    }
+  };
 
   const contactDetails = [
     { icon: Phone, title: t('contact.phoneLabel'), value: '+250 788 123 456' },
@@ -75,30 +101,71 @@ export default function Contact() {
             <Reveal delay={0.1}>
               <div className="card p-8">
                 <h2 className="mb-6 text-3xl font-semibold text-primary-800 dark:text-white">{t('contact.formHeading')}</h2>
-                <form className="space-y-5">
+
+                {error && (
+                  <div className="mb-6 flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300">
+                    <AlertCircle size={16} className="mt-0.5 shrink-0" />
+                    <span>{error}</span>
+                  </div>
+                )}
+                {success && (
+                  <div className="mb-6 flex items-start gap-2 rounded-xl border border-secondary-200 bg-secondary-50 p-3 text-sm text-secondary-700 dark:border-secondary-800 dark:bg-secondary-900/30 dark:text-secondary-300">
+                    <CheckCircle2 size={16} className="mt-0.5 shrink-0" />
+                    <span>{t('contact.sendSuccess')}</span>
+                  </div>
+                )}
+
+                <form className="space-y-5" onSubmit={handleSubmit}>
                   <div className="grid gap-5 md:grid-cols-2">
                     <div>
                       <label className="mb-2 block text-sm font-medium text-primary-700 dark:text-primary-100">{t('contact.fullName')}</label>
-                      <input type="text" placeholder={t('contact.fullNamePlaceholder')} className="w-full rounded-2xl border border-primary-100 bg-primary-50/30 px-4 py-3 text-sm text-primary-800 outline-none transition focus:border-primary-500 dark:border-primary-700/50 dark:bg-primary-900/50 dark:text-white dark:placeholder:text-primary-100/50" />
+                      <input
+                        type="text"
+                        required
+                        value={form.name}
+                        onChange={updateField('name')}
+                        placeholder={t('contact.fullNamePlaceholder')}
+                        className="w-full rounded-2xl border border-primary-100 bg-primary-50/30 px-4 py-3 text-sm text-primary-800 outline-none transition focus:border-primary-500 dark:border-primary-700/50 dark:bg-primary-900/50 dark:text-white dark:placeholder:text-primary-100/50"
+                      />
                     </div>
                     <div>
                       <label className="mb-2 block text-sm font-medium text-primary-700 dark:text-primary-100">{t('contact.emailAddress')}</label>
-                      <input type="email" placeholder="your@email.com" className="w-full rounded-2xl border border-primary-100 bg-primary-50/30 px-4 py-3 text-sm text-primary-800 outline-none transition focus:border-primary-500 dark:border-primary-700/50 dark:bg-primary-900/50 dark:text-white dark:placeholder:text-primary-100/50" />
+                      <input
+                        type="email"
+                        required
+                        value={form.email}
+                        onChange={updateField('email')}
+                        placeholder="your@email.com"
+                        className="w-full rounded-2xl border border-primary-100 bg-primary-50/30 px-4 py-3 text-sm text-primary-800 outline-none transition focus:border-primary-500 dark:border-primary-700/50 dark:bg-primary-900/50 dark:text-white dark:placeholder:text-primary-100/50"
+                      />
                     </div>
                   </div>
 
                   <div>
                     <label className="mb-2 block text-sm font-medium text-primary-700 dark:text-primary-100">{t('contact.subject')}</label>
-                    <input type="text" placeholder={t('contact.subjectPlaceholder')} className="w-full rounded-2xl border border-primary-100 bg-primary-50/30 px-4 py-3 text-sm text-primary-800 outline-none transition focus:border-primary-500 dark:border-primary-700/50 dark:bg-primary-900/50 dark:text-white dark:placeholder:text-primary-100/50" />
+                    <input
+                      type="text"
+                      value={form.subject}
+                      onChange={updateField('subject')}
+                      placeholder={t('contact.subjectPlaceholder')}
+                      className="w-full rounded-2xl border border-primary-100 bg-primary-50/30 px-4 py-3 text-sm text-primary-800 outline-none transition focus:border-primary-500 dark:border-primary-700/50 dark:bg-primary-900/50 dark:text-white dark:placeholder:text-primary-100/50"
+                    />
                   </div>
 
                   <div>
                     <label className="mb-2 block text-sm font-medium text-primary-700 dark:text-primary-100">{t('contact.message')}</label>
-                    <textarea rows={5} placeholder={t('contact.messagePlaceholder')} className="w-full resize-none rounded-2xl border border-primary-100 bg-primary-50/30 px-4 py-3 text-sm text-primary-800 outline-none transition focus:border-primary-500 dark:border-primary-700/50 dark:bg-primary-900/50 dark:text-white dark:placeholder:text-primary-100/50" />
+                    <textarea
+                      rows={5}
+                      required
+                      value={form.message}
+                      onChange={updateField('message')}
+                      placeholder={t('contact.messagePlaceholder')}
+                      className="w-full resize-none rounded-2xl border border-primary-100 bg-primary-50/30 px-4 py-3 text-sm text-primary-800 outline-none transition focus:border-primary-500 dark:border-primary-700/50 dark:bg-primary-900/50 dark:text-white dark:placeholder:text-primary-100/50"
+                    />
                   </div>
 
-                  <button type="submit" className="btn-primary w-full gap-2">
-                    {t('contact.sendMessage')} <Send size={18} />
+                  <button type="submit" disabled={sending} className="btn-primary w-full gap-2 disabled:opacity-60">
+                    {sending ? t('contact.sending') : t('contact.sendMessage')} {!sending && <Send size={18} />}
                   </button>
                 </form>
               </div>

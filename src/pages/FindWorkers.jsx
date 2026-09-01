@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Reveal from '../components/animations/Reveal';
 import WorkerCard from '../components/ui/WorkerCard';
-import { workers } from '../data';
+import { LoadingState, ErrorState } from '../components/ui/AsyncState';
+import { api } from '../lib/api';
 import { Search, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -10,6 +11,26 @@ export default function FindWorkers() {
   const { t, pick } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState({ trade: '', location: '', rating: '' });
+  const [workers, setWorkers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let cancelled = false;
+    api.getWorkers()
+      .then(({ workers: rows }) => {
+        if (!cancelled) setWorkers(rows);
+      })
+      .catch(() => {
+        if (!cancelled) setError(t('common.loadError'));
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [t]);
 
   const trades = [...new Set(workers.map((worker) => worker.trade))];
   const locations = [...new Set(workers.map((worker) => worker.location))];
@@ -110,40 +131,30 @@ export default function FindWorkers() {
             </div>
           </div>
 
-          <div>
-            <p className="mb-6 text-sm text-primary-700/75 dark:text-primary-100/75">
-              {filteredWorkers.length === 1 ? t('findWorkers.showingOne') : t('findWorkers.showingMany', { count: filteredWorkers.length })}
-            </p>
+          {loading && <LoadingState label={t('common.loading')} />}
+          {!loading && error && <ErrorState message={error} />}
 
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {filteredWorkers.map((worker) => (
-                <Reveal key={worker.id}>
-                  <WorkerCard worker={worker} />
-                </Reveal>
-              ))}
-            </div>
+          {!loading && !error && (
+            <div>
+              <p className="mb-6 text-sm text-primary-700/75 dark:text-primary-100/75">
+                {filteredWorkers.length === 1 ? t('findWorkers.showingOne') : t('findWorkers.showingMany', { count: filteredWorkers.length })}
+              </p>
 
-            {filteredWorkers.length === 0 && (
-              <div className="mt-8 rounded-[28px] border border-dashed border-primary-200 bg-primary-50/40 p-10 text-center text-primary-700 dark:border-primary-700 dark:bg-primary-800/40 dark:text-primary-100">
-                {t('findWorkers.noResults')}
+              <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                {filteredWorkers.map((worker) => (
+                  <Reveal key={worker.id}>
+                    <WorkerCard worker={worker} />
+                  </Reveal>
+                ))}
               </div>
-            )}
-          </div>
 
-          <div className="mt-12 flex items-center justify-center gap-3">
-            {[1, 2, 3, 4].map((page) => (
-              <button
-                key={page}
-                className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-medium ${
-                  page === 1
-                    ? 'bg-primary-700 text-white dark:bg-primary-400 dark:text-primary-900'
-                    : 'bg-primary-50 text-primary-700 dark:bg-primary-800 dark:text-primary-100'
-                }`}
-              >
-                {page}
-              </button>
-            ))}
-          </div>
+              {filteredWorkers.length === 0 && (
+                <div className="mt-8 rounded-[28px] border border-dashed border-primary-200 bg-primary-50/40 p-10 text-center text-primary-700 dark:border-primary-700 dark:bg-primary-800/40 dark:text-primary-100">
+                  {t('findWorkers.noResults')}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </section>
     </>
