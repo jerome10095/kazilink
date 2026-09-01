@@ -41,8 +41,8 @@ export default {
 
   home: {
     heroBadge: "Urubuga rwizewe rw'akazi mu Rwanda",
-    heroTitlePre: "Huza n'",
-    heroTitleHighlight: 'abakozi bemejwe',
+    heroTitlePre: "Hura n'",
+    heroTitleHighlight: 'abakozi bazwi',
     heroTitlePost: ' ushobora kwizera.',
     heroParagraph:
       "KaziLink ihuza abakozi b'Abanyarwanda babifitiye ubumenyi n'abakoresha binyuze mu mifile yemejwe, amanota agaragara, n'uburyo bwizewe bwo gushaka akazi — kuva igihe mubonana bwa mbere kugeza akazi karangiye.",
