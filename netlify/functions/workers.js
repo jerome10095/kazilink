@@ -38,6 +38,7 @@ async function listWorkers(req) {
   const location = url.searchParams.get('location');
   const minRating = url.searchParams.get('minRating');
   const limit = url.searchParams.get('limit');
+  const exclude = url.searchParams.get('exclude');
 
   let query = getServiceClient().from('worker_profiles').select(SELECT);
   if (trade) query = query.eq('trade', trade);
@@ -61,6 +62,10 @@ async function listWorkers(req) {
         (row.trade ?? '').toLowerCase().includes(needle) ||
         (row.trade_rw ?? '').toLowerCase().includes(needle)
     );
+  }
+
+  if (exclude) {
+    rows = rows.filter((row) => String(row.id) !== exclude);
   }
 
   if (limit) {

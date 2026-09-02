@@ -1,28 +1,64 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { ArrowLeft, X, Star, ShieldCheck, MapPin, Clock, Banknote, MessageCircle } from 'lucide-react';
+import {
+  ArrowLeft,
+  Star,
+  StarHalf,
+  ShieldCheck,
+  MapPin,
+  Clock,
+  MessageCircle,
+  Briefcase,
+  Award,
+  Calendar,
+  CheckCircle,
+  X,
+} from 'lucide-react';
 import Reveal from '../components/animations/Reveal';
+import WorkerCard from '../components/ui/WorkerCard';
 import { LoadingState, ErrorState } from '../components/ui/AsyncState';
 import { api } from '../lib/api';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 
 export default function WorkerDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { t, pick } = useLanguage();
+  const { isAuthenticated, user } = useAuth();
   const [worker, setWorker] = useState(null);
+  const [relatedWorkers, setRelatedWorkers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [error, setError] = useState('');
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [contactMessage, setContactMessage] = useState('');
+  const [sendingMessage, setSendingMessage] = useState(false);
+  const [messageSent, setMessageSent] = useState(false);
+  const [sendError, setSendError] = useState('');
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     setError('');
     setNotFound(false);
+
     api.getWorker(id)
-      .then(({ worker: row }) => {
-        if (!cancelled) setWorker(row);
+      .then(async ({ worker: row }) => {
+        if (cancelled) return;
+        setWorker(row);
+
+        try {
+          const { workers: related } = await api.getWorkers({
+            trade: row.trade,
+            limit: 4,
+            exclude: id,
+          });
+          if (!cancelled) setRelatedWorkers(related || []);
+        } catch {
+          if (!cancelled) setRelatedWorkers([]);
+        }
       })
       .catch((err) => {
         if (cancelled) return;
@@ -32,148 +68,200 @@ export default function WorkerDetail() {
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
+
     return () => {
       cancelled = true;
     };
   }, [id, t]);
 
-  return (
-    <>
-      <Helmet>
-        <title>{worker ? `${worker.name} - KaziLink` : 'Worker Profile - KaziLink'}</title>
-      </Helmet>
+  const handleContact = async (event) => {
+    event.preventDefault();
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: `/workers/${id}` } });
+      return;
+    }
 
-      <section className="section-padding bg-paper dark:bg-primary-900">
-        <div className="container-custom max-w-3xl">
-          <Link
-            to="/find-workers"
-            className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-primary-600 transition hover:text-primary-700 dark:text-primary-300 dark:hover:text-primary-100"
-          >
-            <ArrowLeft size={16} /> {t('workerDetail.backToWorkers')}
-          </Link>
+    setSendError('');
+    setSendingMessage(true);
+    try {
+      await api.sendContactMessage({
+        name: user.fullName,
+        email: user.email,
+        subject: `Inquiry about ${worker.name}`,
+        message: contactMessage || `I'm interested in hiring ${worker.name} for a job.`,
+      });
+      setMessageSent(true);
+      setContactMessage('');
+      setTimeout(() => {
+        setShowContactModal(false);
+        setMessageSent(false);
+      }, 3000);
+    } catch (err) {
+      setSendError(err.message);
+    } finally {
+      setSendingMessage(false);
+    }
+  };
 
-          {loading && <LoadingState label={t('common.loading')} />}
-          {!loading && error && <ErrorState message={error} />}
+  if (loading) {
+    return (
+      <section className="section-padding dark:bg-primary-900">
+        <div className="container-custom">
+          <LoadingState label={t('common.loading')} />
+        </div>
+      </section>
+    );
+  }
 
-          {!loading && !error && notFound && (
+  if (error || notFound || !worker) {
+    return (
+      <section className="section-padding dark:bg-primary-900">
+        <div className="container-custom">
+          {error ? (
+            <ErrorState message={error} />
+          ) : (
             <div className="rounded-[28px] border border-dashed border-primary-200 bg-primary-50/40 p-10 text-center dark:border-primary-700 dark:bg-primary-800/40">
               <h1 className="text-xl font-semibold text-primary-800 dark:text-white">{t('workerDetail.notFoundTitle')}</h1>
               <p className="mt-2 text-sm text-primary-700/75 dark:text-primary-100/75">{t('workerDetail.notFoundBody')}</p>
-              <Link
-                to="/find-workers"
-                className="mt-6 inline-flex items-center gap-2 rounded-full bg-primary-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-primary-700"
-              >
-                <ArrowLeft size={16} /> {t('workerDetail.backToWorkers')}
-              </Link>
             </div>
           )}
+          <div className="mt-6 text-center">
+            <Link to="/find-workers" className="btn-primary">
+              <ArrowLeft size={18} className="mr-2" />
+              {t('workerDetail.backToWorkers')}
+            </Link>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
-          {!loading && !error && !notFound && worker && (
-            <Reveal>
-              <div className="relative overflow-hidden rounded-[28px] border border-primary-100 bg-white shadow-soft dark:border-primary-700/50 dark:bg-primary-800">
-                <Link
-                  to="/find-workers"
-                  aria-label={t('workerDetail.close')}
-                  className="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition hover:bg-white/30"
-                >
-                  <X size={18} />
-                </Link>
+  const trade = pick(worker.trade, worker.tradeRw);
+  const bio = pick(worker.bio, worker.bioRw);
+  const initials = worker.name
+    .split(' ')
+    .map((p) => p[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
 
-                <div className="relative h-28 bg-gradient-to-br from-primary-400 via-primary-500 to-primary-600">
-                  <div className="absolute top-4 left-4">
-                    {worker.available ? (
-                      <span className="flex items-center gap-1 rounded-full bg-green-500/90 px-2.5 py-1 text-xs text-white backdrop-blur-sm">
-                        <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
-                        {t('workerCard.available')}
-                      </span>
-                    ) : (
-                      <span className="flex items-center gap-1 rounded-full bg-gray-500/90 px-2.5 py-1 text-xs text-white backdrop-blur-sm">
-                        <Clock size={10} />
-                        {t('workerCard.busy')}
-                      </span>
-                    )}
+  const renderStars = (rating) => {
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+    const stars = [];
+
+    for (let i = 0; i < fullStars; i++) {
+      stars.push(<Star key={`full-${i}`} size={18} className="fill-accent-500 text-accent-500" />);
+    }
+    if (hasHalfStar) {
+      stars.push(<StarHalf key="half" size={18} className="fill-accent-500 text-accent-500" />);
+    }
+    for (let i = 0; i < emptyStars; i++) {
+      stars.push(<Star key={`empty-${i}`} size={18} className="text-primary-200 dark:text-primary-700" />);
+    }
+    return stars;
+  };
+
+  return (
+    <>
+      <Helmet>
+        <title>{`${worker.name} - ${trade} | KaziLink`}</title>
+        <meta name="description" content={bio} />
+      </Helmet>
+
+      <section className="section-padding bg-paper dark:bg-primary-900">
+        <div className="container-custom">
+          <Reveal>
+            <Link
+              to="/find-workers"
+              className="inline-flex items-center gap-2 text-sm font-medium text-primary-600 transition-colors hover:text-primary-800 dark:text-primary-300 dark:hover:text-primary-100"
+            >
+              <ArrowLeft size={16} />
+              {t('workerDetail.backToWorkers')}
+            </Link>
+          </Reveal>
+
+          <div className="mt-6 grid gap-8 lg:grid-cols-3">
+            <div className="lg:col-span-2">
+              <Reveal>
+                <div className="card p-6 md:p-8">
+                  <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
+                    <div className={`relative ${worker.verified ? 'verified-ring' : ''}`}>
+                      {worker.avatarUrl ? (
+                        <img
+                          src={worker.avatarUrl}
+                          alt={worker.name}
+                          className="h-24 w-24 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary-500 text-3xl font-bold text-white">
+                          {initials}
+                        </div>
+                      )}
+                      {worker.verified && (
+                        <ShieldCheck
+                          size={24}
+                          className="absolute -bottom-1 -right-1 rounded-full bg-white text-secondary-500 dark:bg-primary-800"
+                        />
+                      )}
+                    </div>
+
+                    <div className="flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h1 className="text-3xl font-bold text-primary-800 dark:text-white">{worker.name}</h1>
+                        {worker.verified && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-secondary-50 px-3 py-1 text-xs font-semibold text-secondary-700 dark:bg-secondary-900/40 dark:text-secondary-300">
+                            <ShieldCheck size={14} />
+                            {t('workerCard.verified')}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-lg font-medium text-primary-600 dark:text-primary-300">{trade}</p>
+                      <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-primary-600 dark:text-primary-300">
+                        <span className="flex items-center gap-1">
+                          <MapPin size={16} />
+                          {worker.location}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Clock size={16} />
+                          {worker.experience} {t('common.years')}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Briefcase size={16} />
+                          {worker.available ? (
+                            <span className="text-green-600 dark:text-green-400">{t('workerCard.available')}</span>
+                          ) : (
+                            <span className="text-red-600 dark:text-red-400">{t('workerCard.busy')}</span>
+                          )}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                </div>
 
-                <div className="px-6 pb-6 sm:px-8 sm:pb-8">
-                  <div className={`-mt-12 mb-4 inline-block ${worker.verified ? 'verified-ring' : ''}`}>
-                    {worker.avatarUrl ? (
-                      <img
-                        src={worker.avatarUrl}
-                        alt={worker.name}
-                        className="h-20 w-20 rounded-full border-4 border-white object-cover shadow-lg dark:border-primary-800"
-                      />
-                    ) : (
-                      <div className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-white bg-primary-500 font-display text-xl font-semibold text-white shadow-lg dark:border-primary-800">
-                        {worker.name.split(' ').map((part) => part[0]).slice(0, 2).join('').toUpperCase()}
-                      </div>
-                    )}
+                  <div className="mt-6 flex flex-wrap items-center gap-2 border-t border-primary-100 pt-6 dark:border-primary-700/50">
+                    <div className="flex items-center gap-0.5">{renderStars(worker.rating)}</div>
+                    <span className="font-bold text-primary-800 dark:text-white">{worker.rating}</span>
+                    <span className="text-sm text-primary-500 dark:text-primary-300">
+                      ({worker.reviewCount} {worker.reviewCount === 1 ? t('workerDetail.review') : t('workerDetail.reviews')})
+                    </span>
                   </div>
 
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                      <div className="flex items-center gap-1.5">
-                        <h1 className="font-display text-2xl font-semibold text-ink dark:text-white">{worker.name}</h1>
-                        {worker.verified && <ShieldCheck size={18} className="shrink-0 text-secondary-500" />}
-                      </div>
-                      <p className="font-mono text-sm uppercase tracking-wide text-primary-500 dark:text-primary-300">
-                        {pick(worker.trade, worker.tradeRw)}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-1 rounded-full bg-accent-50 px-3 py-1.5 dark:bg-primary-700/60">
-                      <Star size={16} className="fill-accent-500 text-accent-500" />
-                      <span className="font-mono text-sm font-semibold text-ink dark:text-white">{worker.rating}</span>
-                      <span className="text-xs text-ink/40 dark:text-primary-100/50">
-                        ({worker.reviewCount} {worker.reviewCount === 1 ? t('workerDetail.review') : t('workerDetail.reviews')})
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                    <div className="flex items-center gap-2 rounded-2xl border border-paper-dim bg-primary-50/40 px-4 py-3 text-sm text-ink/70 dark:border-primary-700/50 dark:bg-primary-900/40 dark:text-primary-100/70">
-                      <MapPin size={16} className="shrink-0 text-primary-500 dark:text-primary-300" />
-                      <div>
-                        <p className="text-xs text-ink/40 dark:text-primary-100/50">{t('workerDetail.location')}</p>
-                        <p className="font-medium">{worker.location}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 rounded-2xl border border-paper-dim bg-primary-50/40 px-4 py-3 text-sm text-ink/70 dark:border-primary-700/50 dark:bg-primary-900/40 dark:text-primary-100/70">
-                      <Clock size={16} className="shrink-0 text-primary-500 dark:text-primary-300" />
-                      <div>
-                        <p className="text-xs text-ink/40 dark:text-primary-100/50">{t('workerDetail.experience')}</p>
-                        <p className="font-medium">{worker.experience} {t('common.years')}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 rounded-2xl border border-paper-dim bg-primary-50/40 px-4 py-3 text-sm text-ink/70 dark:border-primary-700/50 dark:bg-primary-900/40 dark:text-primary-100/70">
-                      <Banknote size={16} className="shrink-0 text-primary-500 dark:text-primary-300" />
-                      <div>
-                        <p className="text-xs text-ink/40 dark:text-primary-100/50">{t('workerDetail.rate')}</p>
-                        <p className="font-medium">{worker.rate.toLocaleString()} RWF <span className="text-xs font-normal text-ink/40 dark:text-primary-100/50">{t('common.perDay')}</span></p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {pick(worker.bio, worker.bioRw) && (
+                  {bio && (
                     <div className="mt-6">
-                      <h2 className="text-sm font-semibold uppercase tracking-wide text-primary-700 dark:text-primary-200">
-                        {t('workerDetail.about')}
-                      </h2>
-                      <p className="mt-2 text-sm leading-relaxed text-ink/70 dark:text-primary-100/70">
-                        {pick(worker.bio, worker.bioRw)}
-                      </p>
+                      <h2 className="text-xl font-semibold text-primary-800 dark:text-white">{t('workerDetail.about')}</h2>
+                      <p className="mt-3 leading-relaxed text-primary-700/75 dark:text-primary-100/70">{bio}</p>
                     </div>
                   )}
 
                   {worker.skills.length > 0 && (
                     <div className="mt-6">
-                      <h2 className="text-sm font-semibold uppercase tracking-wide text-primary-700 dark:text-primary-200">
-                        {t('workerDetail.skills')}
-                      </h2>
-                      <div className="mt-2 flex flex-wrap gap-2">
+                      <h2 className="text-xl font-semibold text-primary-800 dark:text-white">{t('workerDetail.skills')}</h2>
+                      <div className="mt-3 flex flex-wrap gap-2">
                         {worker.skills.map((skill) => (
                           <span
                             key={skill}
-                            className="rounded-full bg-primary-100 px-3 py-1 text-xs font-medium text-primary-700 dark:bg-primary-700/50 dark:text-primary-100"
+                            className="rounded-full bg-primary-100 px-4 py-1.5 text-sm font-medium text-primary-700 dark:bg-primary-700/60 dark:text-primary-100"
                           >
                             {skill}
                           </span>
@@ -181,19 +269,166 @@ export default function WorkerDetail() {
                       </div>
                     </div>
                   )}
-
-                  <Link
-                    to="/contact"
-                    className="mt-8 inline-flex items-center gap-2 rounded-full bg-primary-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-primary-700"
-                  >
-                    <MessageCircle size={16} /> {t('workerDetail.contactCta')}
-                  </Link>
                 </div>
-              </div>
-            </Reveal>
-          )}
+              </Reveal>
+
+              <Reveal delay={0.1}>
+                <div className="mt-6 card p-6 md:p-8">
+                  <h2 className="text-xl font-semibold text-primary-800 dark:text-white">{t('workerDetail.reviewsTitle')}</h2>
+                  <div className="mt-4 rounded-2xl border border-dashed border-primary-200 bg-primary-50/40 p-8 text-center text-primary-600 dark:border-primary-700 dark:bg-primary-800/40 dark:text-primary-300">
+                    <p>{t('workerDetail.reviewsEmpty')}</p>
+                    <p className="mt-2 text-sm">{t('workerDetail.reviewsEmptyCta')}</p>
+                  </div>
+                </div>
+              </Reveal>
+            </div>
+
+            <div>
+              <Reveal>
+                <div className="card p-6">
+                  <h2 className="text-xl font-semibold text-primary-800 dark:text-white">{t('workerDetail.rate')}</h2>
+                  <div className="mt-2 flex items-baseline gap-1">
+                    <span className="text-3xl font-bold text-primary-700 dark:text-primary-200">
+                      {worker.rate.toLocaleString()}
+                    </span>
+                    <span className="text-sm text-primary-500 dark:text-primary-300">
+                      RWF {t('common.perDay')}
+                    </span>
+                  </div>
+
+                  <hr className="my-4 border-primary-100 dark:border-primary-700/50" />
+
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 text-sm">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-100 text-primary-600 dark:bg-primary-700/60 dark:text-primary-200">
+                        <Award size={16} />
+                      </div>
+                      <div>
+                        <p className="text-xs text-primary-500 dark:text-primary-300">{t('workerDetail.experience')}</p>
+                        <p className="font-medium text-primary-800 dark:text-white">
+                          {worker.experience} {t('common.years')}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 text-sm">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-100 text-primary-600 dark:bg-primary-700/60 dark:text-primary-200">
+                        <MapPin size={16} />
+                      </div>
+                      <div>
+                        <p className="text-xs text-primary-500 dark:text-primary-300">{t('workerDetail.location')}</p>
+                        <p className="font-medium text-primary-800 dark:text-white">{worker.location}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 text-sm">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-100 text-primary-600 dark:bg-primary-700/60 dark:text-primary-200">
+                        <Calendar size={16} />
+                      </div>
+                      <div>
+                        <p className="text-xs text-primary-500 dark:text-primary-300">{t('workerCard.available')}</p>
+                        <p className={`font-medium ${worker.available ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                          {worker.available ? t('workerCard.available') : t('workerCard.busy')}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <hr className="my-4 border-primary-100 dark:border-primary-700/50" />
+
+                  <button onClick={() => setShowContactModal(true)} className="btn-primary w-full gap-2">
+                    <MessageCircle size={18} />
+                    {t('workerDetail.contactCta')}
+                  </button>
+
+                  {!isAuthenticated && (
+                    <p className="mt-3 text-center text-xs text-primary-500 dark:text-primary-300">
+                      {t('workerDetail.loginRequired')}
+                    </p>
+                  )}
+                </div>
+              </Reveal>
+
+              {relatedWorkers.length > 0 && (
+                <Reveal delay={0.15}>
+                  <div className="mt-6">
+                    <h3 className="mb-4 text-lg font-semibold text-primary-800 dark:text-white">
+                      {t('workerDetail.similarWorkers')}
+                    </h3>
+                    <div className="space-y-3">
+                      {relatedWorkers.slice(0, 3).map((related) => (
+                        <WorkerCard key={related.id} worker={related} compact />
+                      ))}
+                    </div>
+                    <Link
+                      to="/find-workers"
+                      className="mt-4 inline-block text-sm font-medium text-primary-600 hover:underline dark:text-primary-300"
+                    >
+                      {t('common.viewAll')} →
+                    </Link>
+                  </div>
+                </Reveal>
+              )}
+            </div>
+          </div>
         </div>
       </section>
+
+      {showContactModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+          <div className="relative w-full max-w-md rounded-2xl bg-white shadow-strong dark:bg-primary-800">
+            <button
+              onClick={() => setShowContactModal(false)}
+              aria-label={t('workerDetail.close')}
+              className="absolute right-4 top-4 text-primary-400 hover:text-primary-600 dark:text-primary-300 dark:hover:text-primary-100"
+            >
+              <X size={20} />
+            </button>
+
+            <div className="p-6">
+              <h3 className="text-xl font-bold text-primary-800 dark:text-white">
+                {t('workerDetail.contactModalTitle', { name: worker.name })}
+              </h3>
+              <p className="mt-1 text-sm text-primary-600 dark:text-primary-300">
+                {t('workerDetail.contactModalBody')}
+              </p>
+
+              {messageSent ? (
+                <div className="mt-6 flex items-center gap-2 rounded-xl border border-secondary-200 bg-secondary-50 p-4 text-secondary-700 dark:border-secondary-800 dark:bg-secondary-900/30 dark:text-secondary-300">
+                  <CheckCircle size={20} />
+                  {t('workerDetail.messageSentConfirmation')}
+                </div>
+              ) : (
+                <form onSubmit={handleContact} className="mt-4 space-y-4">
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-primary-700 dark:text-primary-100">
+                      {t('workerDetail.messageLabel')}
+                    </label>
+                    <textarea
+                      rows={4}
+                      value={contactMessage}
+                      onChange={(event) => setContactMessage(event.target.value)}
+                      placeholder={t('workerDetail.messagePlaceholder', { name: worker.name })}
+                      className="w-full rounded-xl border border-primary-100 bg-primary-50/30 px-4 py-3 text-sm text-primary-800 outline-none transition focus:border-primary-500 dark:border-primary-700/50 dark:bg-primary-900/50 dark:text-white dark:placeholder:text-primary-100/50"
+                      required
+                    />
+                  </div>
+
+                  {sendError && (
+                    <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300">
+                      {sendError}
+                    </div>
+                  )}
+
+                  <button type="submit" disabled={sendingMessage} className="btn-primary w-full gap-2 disabled:opacity-60">
+                    {sendingMessage ? t('workerDetail.sending') : t('workerDetail.sendMessage')}
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

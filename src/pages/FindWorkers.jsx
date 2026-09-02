@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Reveal from '../components/animations/Reveal';
 import WorkerCard from '../components/ui/WorkerCard';
-import { LoadingState, ErrorState } from '../components/ui/AsyncState';
+import { ErrorState } from '../components/ui/AsyncState';
+import { WorkerCardSkeleton } from '../components/ui/Skeleton';
 import { api } from '../lib/api';
 import { Search, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
@@ -131,7 +132,13 @@ export default function FindWorkers() {
             </div>
           </div>
 
-          {loading && <LoadingState label={t('common.loading')} />}
+          {loading && (
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <WorkerCardSkeleton key={index} />
+              ))}
+            </div>
+          )}
           {!loading && error && <ErrorState message={error} />}
 
           {!loading && !error && (

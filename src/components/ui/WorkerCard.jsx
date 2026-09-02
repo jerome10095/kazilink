@@ -1,9 +1,23 @@
 import { Link } from 'react-router-dom';
-import { Star, ShieldCheck, MapPin, Clock, MessageCircle, ThumbsUp } from 'lucide-react';
+import { Star, ShieldCheck, MapPin, Clock, MessageCircle, ThumbsUp, Heart } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
+import { useFavorites } from '../../hooks/useFavorites';
+import { useToast } from './Toast';
 
 export default function WorkerCard({ worker, compact = false }) {
   const { t, pick } = useLanguage();
+  const { toggleFavorite, isFavorite } = useFavorites();
+  const { addToast } = useToast();
+  const favorited = isFavorite(worker.id);
+
+  const handleToggleFavorite = (event) => {
+    event.preventDefault();
+    toggleFavorite(worker.id);
+    addToast(
+      favorited ? t('workerCard.removedFavorite') : t('workerCard.addedFavorite'),
+      'success'
+    );
+  };
   const trade = pick(worker.trade, worker.tradeRw);
   const bio = pick(worker.bio, worker.bioRw);
   const initials = worker.name
@@ -52,6 +66,15 @@ export default function WorkerCard({ worker, compact = false }) {
               <rect width="100%" height="100%" fill={`url(#pattern-${worker.id})`} />
             </svg>
           </div>
+
+          {/* Favorite toggle */}
+          <button
+            onClick={handleToggleFavorite}
+            aria-label={favorited ? t('workerCard.removeFavorite') : t('workerCard.addFavorite')}
+            className="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 shadow-soft transition hover:scale-110 dark:bg-primary-800/90"
+          >
+            <Heart size={16} className={favorited ? 'fill-red-500 text-red-500' : 'text-primary-400'} />
+          </button>
 
           {/* Status Badge */}
           <div className="absolute top-3 right-3">

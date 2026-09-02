@@ -3,7 +3,8 @@ import { Helmet } from 'react-helmet-async';
 import { Search, SlidersHorizontal } from 'lucide-react';
 import Reveal from '../components/animations/Reveal';
 import ServiceCard from '../components/ui/ServiceCard';
-import { LoadingState, ErrorState } from '../components/ui/AsyncState';
+import { ErrorState } from '../components/ui/AsyncState';
+import { ServiceCardSkeleton } from '../components/ui/Skeleton';
 import { api } from '../lib/api';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -101,7 +102,13 @@ export default function Services() {
             </div>
           </div>
 
-          {loading && <LoadingState label={t('common.loading')} />}
+          {loading && (
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <ServiceCardSkeleton key={index} />
+              ))}
+            </div>
+          )}
           {!loading && error && <ErrorState message={error} />}
 
           {!loading && !error && (

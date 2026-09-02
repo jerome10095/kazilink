@@ -195,6 +195,10 @@ export default {
     helpful: 'Byafashije',
     contact: 'Twandikire',
     viewProfile: 'Reba Umwirondoro →',
+    addFavorite: 'Ongeraho mu bakunzwe',
+    removeFavorite: 'Kuraho mu bakunzwe',
+    addedFavorite: 'Yongewe mu bakunzwe',
+    removedFavorite: 'Yakuwe mu bakunzwe',
   },
 
   workerDetail: {
@@ -210,6 +214,18 @@ export default {
     reviews: 'amanota',
     review: 'inota',
     contactCta: "Vugana n'uyu mukozi",
+    reviewsTitle: "Ibitekerezo by'Abakiriya",
+    reviewsEmpty: 'Ibitekerezo bizagaragara vuba aha.',
+    reviewsEmptyCta: 'Ba uwa mbere utanga igitekerezo kuri uyu mukozi!',
+    similarWorkers: 'Abakozi Basa',
+    contactModalTitle: 'Vugana na {name}',
+    contactModalBody: "Ohereza ubutumwa kugira ngo muganire ku murimo cyangwa akazi ushaka gutanga.",
+    messageLabel: 'Ubutumwa Bwawe',
+    messagePlaceholder: "Muraho {name}, nashaka kukwifashisha ku murimo w'...",
+    messageSentConfirmation: 'Ubutumwa bwoherejwe neza!',
+    sending: 'Kohereza...',
+    sendMessage: 'Ohereza Ubutumwa',
+    loginRequired: "Ugomba kwinjira kugira ngo uvugane n'uyu mukozi.",
   },
 
   howItWorks: {

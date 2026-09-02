@@ -195,6 +195,10 @@ export default {
     helpful: 'Helpful',
     contact: 'Contact',
     viewProfile: 'View Profile →',
+    addFavorite: 'Add to favorites',
+    removeFavorite: 'Remove from favorites',
+    addedFavorite: 'Added to favorites',
+    removedFavorite: 'Removed from favorites',
   },
 
   workerDetail: {
@@ -210,6 +214,18 @@ export default {
     reviews: 'reviews',
     review: 'review',
     contactCta: 'Contact this worker',
+    reviewsTitle: 'Reviews & Feedback',
+    reviewsEmpty: 'Reviews will appear here soon.',
+    reviewsEmptyCta: 'Be the first to review this worker!',
+    similarWorkers: 'Similar Workers',
+    contactModalTitle: 'Contact {name}',
+    contactModalBody: 'Send a message to discuss your project or job opportunity.',
+    messageLabel: 'Your Message',
+    messagePlaceholder: "Hi {name}, I'm interested in hiring you for...",
+    messageSentConfirmation: 'Message sent successfully!',
+    sending: 'Sending...',
+    sendMessage: 'Send Message',
+    loginRequired: "You'll need to log in to contact this worker.",
   },
 
   howItWorks: {
