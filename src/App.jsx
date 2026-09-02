@@ -9,6 +9,7 @@ import About from './pages/About';
 import HowItWorks from './pages/HowItWorks';
 import Services from './pages/Services';
 import FindWorkers from './pages/FindWorkers';
+import WorkerDetail from './pages/WorkerDetail';
 import Employers from './pages/Employers';
 import SuccessStories from './pages/SuccessStories';
 import Training from './pages/Training';
@@ -34,6 +35,7 @@ function App() {
                   <Route path="/how-it-works" element={<HowItWorks />} />
                   <Route path="/services" element={<Services />} />
                   <Route path="/find-workers" element={<FindWorkers />} />
+                  <Route path="/workers/:id" element={<WorkerDetail />} />
                   <Route path="/employers" element={<Employers />} />
                   <Route path="/success-stories" element={<SuccessStories />} />
                   <Route path="/training" element={<Training />} />

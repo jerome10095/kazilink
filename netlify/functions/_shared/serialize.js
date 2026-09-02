@@ -51,6 +51,7 @@ export function serializeWorkerListing(row) {
   return {
     id: row.id,
     name: row.name,
+    avatarUrl: row.avatar_url ?? null,
     trade: row.trade,
     tradeRw: row.trade_rw,
     rating: Number(row.rating),

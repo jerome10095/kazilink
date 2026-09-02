@@ -197,6 +197,21 @@ export default {
     viewProfile: 'View Profile →',
   },
 
+  workerDetail: {
+    close: 'Close',
+    backToWorkers: 'Back to workers',
+    notFoundTitle: 'Worker not found',
+    notFoundBody: "We couldn't find this worker profile. It may have been removed.",
+    about: 'About',
+    skills: 'Skills',
+    rate: 'Rate',
+    location: 'Location',
+    experience: 'Experience',
+    reviews: 'reviews',
+    review: 'review',
+    contactCta: 'Contact this worker',
+  },
+
   howItWorks: {
     badge: 'Simple Process',
     heading: 'How It Works',

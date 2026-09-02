@@ -4,7 +4,7 @@ import { serializeWorkerListing } from './_shared/serialize.js';
 const SELECT = `
   id, trade, trade_rw, rating, review_count, location, experience_years,
   verified, available, rate, bio, bio_rw,
-  users!inner ( full_name ),
+  users!inner ( full_name, profile_image ),
   worker_skills ( skills ( name ) )
 `;
 
@@ -12,6 +12,7 @@ function toRow(record) {
   return {
     id: record.id,
     name: record.users?.full_name ?? '',
+    avatar_url: record.users?.profile_image ?? null,
     trade: record.trade,
     trade_rw: record.trade_rw,
     rating: record.rating,

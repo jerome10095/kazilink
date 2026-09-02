@@ -197,6 +197,21 @@ export default {
     viewProfile: 'Reba Umwirondoro →',
   },
 
+  workerDetail: {
+    close: 'Funga',
+    backToWorkers: 'Subira ku bakozi',
+    notFoundTitle: 'Umukozi ntabwo abonetse',
+    notFoundBody: "Ntabwo twabashije kubona uyu mwirondoro w'umukozi. Ashobora kuba yavanyweho.",
+    about: 'Ibiranga',
+    skills: 'Ubumenyi',
+    rate: 'Igiciro',
+    location: 'Aho aherereye',
+    experience: 'Uburambe',
+    reviews: 'amanota',
+    review: 'inota',
+    contactCta: "Vugana n'uyu mukozi",
+  },
+
   howItWorks: {
     badge: 'Uburyo Boroshye',
     heading: 'Uko Bikora',
