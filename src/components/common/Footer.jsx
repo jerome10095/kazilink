@@ -1,13 +1,14 @@
 import { Link } from 'react-router-dom';
 import { Briefcase, Facebook, Twitter, Linkedin, Instagram, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
+import { socialUrls } from '../../lib/siteConfig';
 
 const socialLinks = [
-  { href: '#', icon: Facebook, label: 'Facebook' },
-  { href: '#', icon: Twitter, label: 'Twitter/X' },
-  { href: '#', icon: Linkedin, label: 'LinkedIn' },
-  { href: '#', icon: Instagram, label: 'Instagram' },
-];
+  { href: socialUrls.facebook, icon: Facebook, label: 'Facebook' },
+  { href: socialUrls.twitter, icon: Twitter, label: 'Twitter/X' },
+  { href: socialUrls.linkedin, icon: Linkedin, label: 'LinkedIn' },
+  { href: socialUrls.instagram, icon: Instagram, label: 'Instagram' },
+].filter((link) => link.href);
 
 export default function Footer() {
   const { t } = useLanguage();
@@ -61,6 +62,8 @@ export default function Footer() {
                 <a
                   key={label}
                   href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label={label}
                   className="flex h-10 w-10 items-center justify-center rounded-full border border-primary-500 bg-white/5 text-primary-100 transition-all duration-300 hover:border-primary-200 hover:bg-primary-500"
                 >
@@ -114,7 +117,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 flex flex-col gap-3 border-t border-primary-500/40 pt-6 text-sm text-primary-100/80 md:flex-row md:items-center md:justify-between">
-          <p>{t('footer.rights')}</p>
+          <p>{t('footer.rights', { year: new Date().getFullYear() })}</p>
         </div>
       </div>
     </footer>

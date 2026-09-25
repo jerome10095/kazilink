@@ -5,9 +5,11 @@ import Reveal from '../components/animations/Reveal';
 import { CheckCircle2, AlertCircle, LogOut, ShieldCheck, Camera, Loader2 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
+import useServices from '../hooks/useServices';
 
 export default function Profile() {
-  const { t } = useLanguage();
+  const { t, pick } = useLanguage();
+  const services = useServices();
   const { user, updateProfile, uploadAvatar, logout } = useAuth();
   const navigate = useNavigate();
   const avatarInputRef = useRef(null);
@@ -24,6 +26,7 @@ export default function Profile() {
     setForm({
       fullName: user.fullName ?? '',
       phone: user.phone ?? '',
+      serviceId: user.worker?.serviceId ?? '',
       trade: user.worker?.trade ?? '',
       bio: user.worker?.bio ?? '',
       location: user.worker?.location ?? user.employer?.location ?? '',
@@ -54,6 +57,7 @@ export default function Profile() {
       if (user.role === 'worker') {
         Object.assign(payload, {
           trade: form.trade,
+          ...(form.serviceId ? { serviceId: form.serviceId } : {}),
           bio: form.bio,
           location: form.location,
           experienceYears: Number(form.experienceYears),
@@ -208,6 +212,23 @@ export default function Profile() {
 
                 {user.role === 'worker' && (
                   <>
+                    {services.length > 0 && (
+                      <div>
+                        <label className="mb-1 block text-sm font-medium text-ink/70 dark:text-primary-100">{t('register.serviceCategory')}</label>
+                        <select
+                          value={form.serviceId}
+                          onChange={updateField('serviceId')}
+                          className="w-full rounded-xl border border-paper-dim px-4 py-3 text-sm outline-none transition focus:border-primary-500 dark:border-primary-700/50 dark:bg-primary-800 dark:text-white"
+                        >
+                          <option value="">{t('register.selectService')}</option>
+                          {services.map((service) => (
+                            <option key={service.id} value={service.id}>
+                              {pick(service.title, service.titleRw)}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
                     <div className="grid gap-5 sm:grid-cols-2">
                       <div>
                         <label className="mb-1 block text-sm font-medium text-ink/70 dark:text-primary-100">{t('register.trade')}</label>

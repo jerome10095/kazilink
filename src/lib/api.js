@@ -17,9 +17,16 @@ async function request(path, { method = 'GET', body, token } = {}) {
     body: body ? JSON.stringify(body) : undefined,
   });
 
-  const data = await response.json().catch(() => ({}));
+  const data = await response.json().catch(() => null);
+  // A successful status with a non-JSON body means /api isn't being served by
+  // the Netlify Functions proxy (e.g. plain `vite` on :3000 returns index.html).
+  if (response.ok && data === null) {
+    const error = new Error('The API returned an invalid response. Run the app with `npm run dev` and open http://localhost:8888.');
+    error.status = response.status;
+    throw error;
+  }
   if (!response.ok) {
-    const error = new Error(data.error || 'Something went wrong');
+    const error = new Error(data?.error || 'Something went wrong');
     error.status = response.status;
     throw error;
   }
@@ -46,6 +53,15 @@ export const api = {
   getWorker: (id) => request(`/workers/${id}`),
   getServices: () => request('/services'),
   sendContactMessage: (payload) => request('/contact', { method: 'POST', body: payload }),
+  getStats: () => request('/stats'),
+  getReviews: (params) => request(`/reviews${toQuery(params)}`),
+  createReview: (payload, token) => request('/reviews', { method: 'POST', body: payload, token }),
+  getTraining: (token) => request('/training', { token }),
+  enrollInTraining: (id, token) => request(`/training/${id}/enroll`, { method: 'POST', token }),
+  createHireRequest: (payload, token) => request('/hire-requests', { method: 'POST', body: payload, token }),
+  getHireRequests: (token) => request('/hire-requests', { token }),
+  respondToHireRequest: (id, status, token) =>
+    request(`/hire-requests/${id}`, { method: 'PATCH', body: { status }, token }),
   uploadAvatar: async (file, token) => {
     const dataBase64 = await readFileAsBase64(file);
     return request('/upload/avatar', {

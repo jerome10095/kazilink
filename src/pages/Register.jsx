@@ -5,15 +5,17 @@ import Reveal from '../components/animations/Reveal';
 import { User, Mail, Lock, Briefcase, ArrowRight, AlertCircle } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
+import useServices from '../hooks/useServices';
 import GoogleButton, { GOOGLE_SIGN_IN_ENABLED } from '../components/auth/GoogleButton';
 
-const initialForm = { fullName: '', email: '', password: '', role: '', trade: '', companyName: '' };
+const initialForm = { fullName: '', email: '', password: '', role: '', serviceId: '', trade: '', companyName: '' };
 
 export default function Register() {
-  const { t } = useLanguage();
+  const { t, pick } = useLanguage();
   const { register, completeProfile, isAuthenticated, needsProfile, loading, authUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const services = useServices();
   const [form, setForm] = useState(initialForm);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -23,7 +25,7 @@ export default function Register() {
     if (isAuthenticated && !needsProfile) {
       navigate(location.state?.from ?? '/profile', { replace: true });
     }
-  }, [loading, isAuthenticated, needsProfile]);
+  }, [loading, isAuthenticated, needsProfile, navigate, location.state?.from]);
 
   const updateField = (field) => (event) => setForm((prev) => ({ ...prev, [field]: event.target.value }));
 
@@ -41,7 +43,8 @@ export default function Register() {
       if (needsProfile) {
         await completeProfile({
           role: form.role,
-          trade: form.role === 'worker' ? form.trade : undefined,
+          serviceId: form.role === 'worker' && form.serviceId ? form.serviceId : undefined,
+          trade: form.role === 'worker' && form.trade ? form.trade : undefined,
           companyName: form.role === 'employer' ? form.companyName : undefined,
         });
       } else {
@@ -50,7 +53,8 @@ export default function Register() {
           email: form.email,
           password: form.password,
           role: form.role,
-          trade: form.role === 'worker' ? form.trade : undefined,
+          serviceId: form.role === 'worker' && form.serviceId ? form.serviceId : undefined,
+          trade: form.role === 'worker' && form.trade ? form.trade : undefined,
           companyName: form.role === 'employer' ? form.companyName : undefined,
         });
       }
@@ -73,8 +77,8 @@ export default function Register() {
           <Reveal>
             <div className="card p-8">
               <div className="text-center mb-8">
-                <h1 className="heading-md dark:text-white">{t('register.heading')}</h1>
-                <p className="text-ink/60 mt-2 dark:text-primary-100/70">{t('register.subheading')}</p>
+                <h1 className="heading-md dark:text-white">{needsProfile ? t('register.finishHeading') : t('register.heading')}</h1>
+                <p className="text-ink/60 mt-2 dark:text-primary-100/70">{needsProfile ? t('register.finishSubheading') : t('register.subheading')}</p>
               </div>
 
               {error && (
@@ -156,6 +160,28 @@ export default function Register() {
                   </div>
                 </div>
 
+                {form.role === 'worker' && services.length > 0 && (
+                  <div>
+                    <label className="block text-sm font-medium text-ink/70 mb-1 dark:text-primary-100">{t('register.serviceCategory')}</label>
+                    <div className="relative">
+                      <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/40 dark:text-primary-100/50" size={18} />
+                      <select
+                        required
+                        value={form.serviceId}
+                        onChange={updateField('serviceId')}
+                        className="w-full pl-12 pr-4 py-3 rounded-xl border border-paper-dim focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 appearance-none dark:border-primary-700/50 dark:bg-primary-800 dark:text-white"
+                      >
+                        <option value="">{t('register.selectService')}</option>
+                        {services.map((service) => (
+                          <option key={service.id} value={service.id}>
+                            {pick(service.title, service.titleRw)}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                )}
+
                 {form.role === 'worker' && (
                   <div>
                     <label className="block text-sm font-medium text-ink/70 mb-1 dark:text-primary-100">{t('register.trade')}</label>
@@ -163,7 +189,7 @@ export default function Register() {
                       <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/40 dark:text-primary-100/50" size={18} />
                       <input
                         type="text"
-                        required
+                        required={services.length === 0}
                         value={form.trade}
                         onChange={updateField('trade')}
                         className="w-full pl-12 pr-4 py-3 rounded-xl border border-paper-dim focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 dark:border-primary-700/50 dark:bg-primary-800 dark:text-white"

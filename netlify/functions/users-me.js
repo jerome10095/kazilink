@@ -27,6 +27,7 @@ async function loadAccount(supabase, userId) {
 
 const USER_FIELDS = { fullName: 'full_name', phone: 'phone' };
 const WORKER_FIELDS = {
+  serviceId: 'service_id',
   trade: 'trade',
   tradeRw: 'trade_rw',
   bio: 'bio',

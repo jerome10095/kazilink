@@ -1,24 +1,33 @@
+import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Reveal from '../components/animations/Reveal';
-import { Star, Quote, Award, Users, Briefcase } from 'lucide-react';
+import ReviewCard from '../components/ui/ReviewCard';
+import { LoadingState, ErrorState } from '../components/ui/AsyncState';
+import { api } from '../lib/api';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function SuccessStories() {
   const { t } = useLanguage();
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const stories = [
-    { id: 1, type: 'worker', name: 'Jean Claude', role: 'Electrician', quote: t('successStories.s1Quote'), icon: Award, color: 'primary' },
-    { id: 2, type: 'employer', name: 'ABC Construction', role: 'Construction Company', quote: t('successStories.s2Quote'), icon: Briefcase, color: 'secondary' },
-    { id: 3, type: 'community', name: t('successStories.s3Name'), role: t('successStories.s3Role'), quote: t('successStories.s3Quote'), icon: Users, color: 'accent' },
-    { id: 4, type: 'worker', name: 'Sarah Mukamana', role: 'Cleaner', quote: t('successStories.s4Quote'), icon: Award, color: 'primary' },
-    { id: 5, type: 'employer', name: 'XYZ Hotel', role: 'Hotel Chain', quote: t('successStories.s5Quote'), icon: Briefcase, color: 'secondary' },
-  ];
-
-  const typeLabel = {
-    worker: t('successStories.typeWorker'),
-    employer: t('successStories.typeEmployer'),
-    community: t('successStories.typeCommunity'),
-  };
+  useEffect(() => {
+    let cancelled = false;
+    api.getReviews({ limit: 12 })
+      .then(({ reviews: rows }) => {
+        if (!cancelled) setReviews(rows);
+      })
+      .catch(() => {
+        if (!cancelled) setError(t('common.loadError'));
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [t]);
 
   return (
     <>
@@ -38,33 +47,20 @@ export default function SuccessStories() {
             </div>
           </Reveal>
 
+          {loading && <LoadingState label={t('common.loading')} />}
+          {!loading && error && <ErrorState message={error} />}
+
+          {!loading && !error && reviews.length === 0 && (
+            <div className="mx-auto max-w-xl rounded-[28px] border border-dashed border-primary-200 bg-primary-50/40 p-10 text-center dark:border-primary-700 dark:bg-primary-800/40">
+              <p className="font-medium text-primary-800 dark:text-white">{t('successStories.empty')}</p>
+              <p className="mt-2 text-sm text-primary-700/75 dark:text-primary-100/75">{t('successStories.emptyHint')}</p>
+            </div>
+          )}
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {stories.map((story, index) => (
-              <Reveal key={story.id} delay={index * 0.1}>
-                <div className="card p-6 card-hover">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-${story.color}-100 text-${story.color}-500 dark:bg-${story.color}-700/60 dark:text-${story.color}-200`}>
-                      <story.icon size={24} />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold dark:text-white">{typeLabel[story.type]}</h4>
-                      <p className="text-sm text-ink/60 dark:text-primary-100/70">{story.name} - {story.role}</p>
-                    </div>
-                  </div>
-                  <div className="relative">
-                    <Quote size={20} className="text-primary-200 absolute -top-1 -left-1 dark:text-primary-600" />
-                    <p className="text-ink/70 leading-relaxed pl-6 dark:text-primary-100/80">
-                      "{story.quote}"
-                    </p>
-                  </div>
-                  <div className="mt-4 flex items-center gap-1 text-accent-500">
-                    <Star size={16} className="fill-accent-500" />
-                    <Star size={16} className="fill-accent-500" />
-                    <Star size={16} className="fill-accent-500" />
-                    <Star size={16} className="fill-accent-500" />
-                    <Star size={16} className="fill-accent-500" />
-                  </div>
-                </div>
+            {reviews.map((review, index) => (
+              <Reveal key={review.id} delay={index * 0.05}>
+                <ReviewCard review={review} showWorker />
               </Reveal>
             ))}
           </div>

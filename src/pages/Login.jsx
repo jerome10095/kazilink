@@ -24,7 +24,7 @@ export default function Login() {
     } else if (isAuthenticated) {
       navigate(location.state?.from ?? '/profile', { replace: true });
     }
-  }, [loading, isAuthenticated, needsProfile]);
+  }, [loading, isAuthenticated, needsProfile, navigate, location.state?.from]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();

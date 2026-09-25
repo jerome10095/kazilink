@@ -2,20 +2,21 @@ import { Helmet } from 'react-helmet-async';
 import Reveal from '../components/animations/Reveal';
 import Counter from '../components/animations/Counter';
 import { Users, ShieldCheck, Briefcase, BookOpen, TrendingUp, Heart } from 'lucide-react';
-import { stats } from '../data';
+import useStats from '../hooks/useStats';
 import { useLanguage } from '../context/LanguageContext';
 
 const iconByLabel = {
   'Workers Registered': Users,
   'Verified Workers': ShieldCheck,
-  'Jobs Completed': Briefcase,
-  'Employers Served': Users,
+  'Hires Confirmed': Briefcase,
+  'Employers Registered': Users,
   'Training Sessions': BookOpen,
   'Customer Satisfaction': Heart,
 };
 
 export default function Impact() {
   const { t } = useLanguage();
+  const { items: stats } = useStats();
   const impactStats = stats.map((stat) => ({ ...stat, icon: iconByLabel[stat.label] ?? Users }));
 
   return (

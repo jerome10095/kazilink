@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import Reveal from '../components/animations/Reveal';
 import WorkerCard from '../components/ui/WorkerCard';
+import ReviewCard from '../components/ui/ReviewCard';
 import { LoadingState, ErrorState } from '../components/ui/AsyncState';
 import { api } from '../lib/api';
 import { useLanguage } from '../context/LanguageContext';
@@ -26,14 +27,18 @@ export default function WorkerDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t, pick } = useLanguage();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, accessToken } = useAuth();
+  const isEmployer = user?.role === 'employer';
   const [worker, setWorker] = useState(null);
   const [relatedWorkers, setRelatedWorkers] = useState([]);
+  const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [error, setError] = useState('');
   const [showContactModal, setShowContactModal] = useState(false);
   const [contactMessage, setContactMessage] = useState('');
+  const [jobTitle, setJobTitle] = useState('');
+  const [proposedRate, setProposedRate] = useState('');
   const [sendingMessage, setSendingMessage] = useState(false);
   const [messageSent, setMessageSent] = useState(false);
   const [sendError, setSendError] = useState('');
@@ -48,6 +53,14 @@ export default function WorkerDetail() {
       .then(async ({ worker: row }) => {
         if (cancelled) return;
         setWorker(row);
+
+        api.getReviews({ workerId: id })
+          .then(({ reviews: rows }) => {
+            if (!cancelled) setReviews(rows);
+          })
+          .catch(() => {
+            if (!cancelled) setReviews([]);
+          });
 
         try {
           const { workers: related } = await api.getWorkers({
@@ -84,18 +97,19 @@ export default function WorkerDetail() {
     setSendError('');
     setSendingMessage(true);
     try {
-      await api.sendContactMessage({
-        name: user.fullName,
-        email: user.email,
-        subject: `Inquiry about ${worker.name}`,
-        message: contactMessage || `I'm interested in hiring ${worker.name} for a job.`,
-      });
+      await api.createHireRequest(
+        {
+          workerId: worker.id,
+          jobTitle,
+          message: contactMessage,
+          proposedRate: proposedRate === '' ? null : Number(proposedRate),
+        },
+        accessToken
+      );
       setMessageSent(true);
       setContactMessage('');
-      setTimeout(() => {
-        setShowContactModal(false);
-        setMessageSent(false);
-      }, 3000);
+      setJobTitle('');
+      setProposedRate('');
     } catch (err) {
       setSendError(err.message);
     } finally {
@@ -275,10 +289,18 @@ export default function WorkerDetail() {
               <Reveal delay={0.1}>
                 <div className="mt-6 card p-6 md:p-8">
                   <h2 className="text-xl font-semibold text-primary-800 dark:text-white">{t('workerDetail.reviewsTitle')}</h2>
-                  <div className="mt-4 rounded-2xl border border-dashed border-primary-200 bg-primary-50/40 p-8 text-center text-primary-600 dark:border-primary-700 dark:bg-primary-800/40 dark:text-primary-300">
-                    <p>{t('workerDetail.reviewsEmpty')}</p>
-                    <p className="mt-2 text-sm">{t('workerDetail.reviewsEmptyCta')}</p>
-                  </div>
+                  {reviews.length === 0 ? (
+                    <div className="mt-4 rounded-2xl border border-dashed border-primary-200 bg-primary-50/40 p-8 text-center text-primary-600 dark:border-primary-700 dark:bg-primary-800/40 dark:text-primary-300">
+                      <p>{t('workerDetail.reviewsEmpty')}</p>
+                      <p className="mt-2 text-sm">{t('workerDetail.reviewsEmptyCta')}</p>
+                    </div>
+                  ) : (
+                    <div className="mt-4 space-y-4">
+                      {reviews.map((review) => (
+                        <ReviewCard key={review.id} review={review} />
+                      ))}
+                    </div>
+                  )}
                 </div>
               </Reveal>
             </div>
@@ -336,14 +358,31 @@ export default function WorkerDetail() {
 
                   <hr className="my-4 border-primary-100 dark:border-primary-700/50" />
 
-                  <button onClick={() => setShowContactModal(true)} className="btn-primary w-full gap-2">
+                  <button
+                    onClick={() => {
+                      if (!isAuthenticated) {
+                        navigate('/login', { state: { from: `/workers/${id}` } });
+                        return;
+                      }
+                      setSendError('');
+                      setMessageSent(false);
+                      setShowContactModal(true);
+                    }}
+                    disabled={isAuthenticated && !isEmployer}
+                    className="btn-primary w-full gap-2 disabled:opacity-60"
+                  >
                     <MessageCircle size={18} />
-                    {t('workerDetail.contactCta')}
+                    {t('workerDetail.hireCta')}
                   </button>
 
                   {!isAuthenticated && (
                     <p className="mt-3 text-center text-xs text-primary-500 dark:text-primary-300">
                       {t('workerDetail.loginRequired')}
+                    </p>
+                  )}
+                  {isAuthenticated && !isEmployer && (
+                    <p className="mt-3 text-center text-xs text-primary-500 dark:text-primary-300">
+                      {t('workerDetail.employerOnly')}
                     </p>
                   )}
                 </div>
@@ -387,19 +426,45 @@ export default function WorkerDetail() {
 
             <div className="p-6">
               <h3 className="text-xl font-bold text-primary-800 dark:text-white">
-                {t('workerDetail.contactModalTitle', { name: worker.name })}
+                {t('workerDetail.hireModalTitle', { name: worker.name })}
               </h3>
               <p className="mt-1 text-sm text-primary-600 dark:text-primary-300">
-                {t('workerDetail.contactModalBody')}
+                {t('workerDetail.hireModalBody', { name: worker.name })}
               </p>
 
               {messageSent ? (
                 <div className="mt-6 flex items-center gap-2 rounded-xl border border-secondary-200 bg-secondary-50 p-4 text-secondary-700 dark:border-secondary-800 dark:bg-secondary-900/30 dark:text-secondary-300">
                   <CheckCircle size={20} />
-                  {t('workerDetail.messageSentConfirmation')}
+                  {t('workerDetail.hireSent')}
+                  <Link to="/requests" className="ml-auto font-medium underline">
+                    {t('workerDetail.viewRequests')}
+                  </Link>
                 </div>
               ) : (
                 <form onSubmit={handleContact} className="mt-4 space-y-4">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-primary-700 dark:text-primary-100">{t('workerDetail.jobTitleLabel')}</label>
+                      <input
+                        type="text"
+                        maxLength={200}
+                        value={jobTitle}
+                        onChange={(event) => setJobTitle(event.target.value)}
+                        placeholder={t('workerDetail.jobTitlePlaceholder')}
+                        className="w-full rounded-xl border border-primary-100 bg-primary-50/30 px-4 py-2.5 text-sm text-primary-800 outline-none transition focus:border-primary-500 dark:border-primary-700/50 dark:bg-primary-900/50 dark:text-white dark:placeholder:text-primary-100/50"
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-primary-700 dark:text-primary-100">{t('workerDetail.rateLabel')}</label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={proposedRate}
+                        onChange={(event) => setProposedRate(event.target.value)}
+                        className="w-full rounded-xl border border-primary-100 bg-primary-50/30 px-4 py-2.5 text-sm text-primary-800 outline-none transition focus:border-primary-500 dark:border-primary-700/50 dark:bg-primary-900/50 dark:text-white dark:placeholder:text-primary-100/50"
+                      />
+                    </div>
+                  </div>
                   <div>
                     <label className="mb-1 block text-sm font-medium text-primary-700 dark:text-primary-100">
                       {t('workerDetail.messageLabel')}
@@ -410,6 +475,7 @@ export default function WorkerDetail() {
                       onChange={(event) => setContactMessage(event.target.value)}
                       placeholder={t('workerDetail.messagePlaceholder', { name: worker.name })}
                       className="w-full rounded-xl border border-primary-100 bg-primary-50/30 px-4 py-3 text-sm text-primary-800 outline-none transition focus:border-primary-500 dark:border-primary-700/50 dark:bg-primary-900/50 dark:text-white dark:placeholder:text-primary-100/50"
+                      maxLength={2000}
                       required
                     />
                   </div>
@@ -421,7 +487,7 @@ export default function WorkerDetail() {
                   )}
 
                   <button type="submit" disabled={sendingMessage} className="btn-primary w-full gap-2 disabled:opacity-60">
-                    {sendingMessage ? t('workerDetail.sending') : t('workerDetail.sendMessage')}
+                    {sendingMessage ? t('workerDetail.sending') : t('workerDetail.sendRequest')}
                   </button>
                 </form>
               )}

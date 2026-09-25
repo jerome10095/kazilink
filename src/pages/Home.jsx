@@ -19,11 +19,12 @@ import WorkerCard from '../components/ui/WorkerCard';
 import ServiceCard from '../components/ui/ServiceCard';
 import { LoadingState, ErrorState } from '../components/ui/AsyncState';
 import { api } from '../lib/api';
-import { stats } from '../data';
+import useStats from '../hooks/useStats';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function Home() {
   const { t, pick } = useLanguage();
+  const { raw: statsRaw, items: stats } = useStats();
   const [workers, setWorkers] = useState([]);
   const [services, setServices] = useState([]);
   const [loadError, setLoadError] = useState('');
@@ -51,7 +52,7 @@ export default function Home() {
   const featuredWorkers = workers.slice(0, 6);
   const heroWorkers = workers.filter((worker) => worker.verified).slice(0, 3);
   const heroStats = stats.slice(0, 3);
-  const jobsStat = stats.find((stat) => stat.label === 'Jobs Completed') ?? stats[0];
+  const jobsStat = stats.find((stat) => stat.label === 'Hires Confirmed');
 
   const heroSteps = [
     { title: t('home.step1Title'), description: t('home.step1Desc'), icon: User, tone: 'bg-primary-100 text-primary-700 dark:bg-primary-700 dark:text-primary-100' },
@@ -254,9 +255,6 @@ export default function Home() {
                       <Counter end={stat.value} suffix={stat.suffix} />
                     </div>
                     <p className="mt-2 text-sm text-primary-700/75 dark:text-primary-100/70">{t(`statLabels.${stat.label}`)}</p>
-                    <div className="mt-5 h-2 overflow-hidden rounded-full bg-primary-50 dark:bg-primary-900/60">
-                      <div className="h-full rounded-full bg-gradient-to-r from-primary-400 to-primary-600" style={{ width: `${Math.max(42, Math.min(96, stat.value))}%` }} />
-                    </div>
                   </div>
                 ))}
               </div>
@@ -302,7 +300,7 @@ export default function Home() {
             <div className="mx-auto max-w-3xl">
               <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white/90 backdrop-blur-sm">
                 <Sparkles size={16} />
-                {t('home.ctaPill')}
+                {statsRaw.verifiedWorkers > 0 ? t('home.ctaPillCount', { count: statsRaw.verifiedWorkers.toLocaleString() }) : t('home.ctaPill')}
               </div>
               <h2 className="text-3xl font-bold md:text-5xl">{t('home.ctaHeading')}</h2>
               <p className="mx-auto mt-4 max-w-2xl text-base text-white/80 md:text-lg">

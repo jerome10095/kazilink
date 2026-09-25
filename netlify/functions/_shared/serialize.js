@@ -21,6 +21,7 @@ export function serializeAccount(profileRow, roleRow) {
 
 export function serializeWorkerProfile(row) {
   return {
+    serviceId: row.service_id ?? null,
     trade: row.trade,
     tradeRw: row.trade_rw,
     bio: row.bio,
@@ -67,7 +68,7 @@ export function serializeWorkerListing(row) {
   };
 }
 
-export function serializeService(row) {
+export function serializeService(row, workers = 0) {
   return {
     id: row.id,
     title: row.title,
@@ -76,6 +77,77 @@ export function serializeService(row) {
     descriptionRw: row.description_rw,
     icon: row.icon,
     color: row.color,
-    workers: row.worker_count,
+    workers,
+  };
+}
+
+// Shapes a hire request for whoever is viewing it. `counterpart` is the other
+// party; their email/phone are only revealed once the worker has accepted.
+export function serializeHireRequest(row, viewerRole) {
+  const isEmployerView = viewerRole === 'employer';
+  const other = isEmployerView ? row.worker_profiles : row.employer_profiles;
+  const otherUser = other?.users;
+  const accepted = row.status === 'accepted';
+
+  return {
+    id: row.id,
+    jobTitle: row.job_title,
+    message: row.message,
+    proposedRate: row.proposed_rate === null ? null : Number(row.proposed_rate),
+    status: row.status,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    counterpart: {
+      id: other?.id ?? null,
+      name: otherUser?.full_name ?? '',
+      avatarUrl: otherUser?.profile_image ?? null,
+      title: isEmployerView ? other?.trade ?? null : other?.company_name ?? null,
+      titleRw: isEmployerView ? other?.trade_rw ?? null : null,
+      email: accepted ? otherUser?.email ?? null : null,
+      phone: accepted ? otherUser?.phone ?? null : null,
+    },
+  };
+}
+
+export function serializeReview(row, companyName, workerRow) {
+  return {
+    id: row.id,
+    rating: row.rating,
+    comment: row.comment,
+    createdAt: row.created_at,
+    reviewer: {
+      name: row.reviewer?.full_name ?? '',
+      avatarUrl: row.reviewer?.profile_image ?? null,
+      company: companyName ?? null,
+    },
+    worker: workerRow
+      ? {
+          id: workerRow.id,
+          name: workerRow.users?.full_name ?? '',
+          trade: workerRow.trade,
+          tradeRw: workerRow.trade_rw,
+        }
+      : null,
+  };
+}
+
+export function serializeTraining(row, enrolledCount = 0, enrolled = false) {
+  return {
+    id: row.id,
+    title: row.title,
+    titleRw: row.title_rw,
+    description: row.description,
+    descriptionRw: row.description_rw,
+    instructor: row.instructor,
+    category: row.category,
+    durationHours: row.duration_hours === null ? null : Number(row.duration_hours),
+    location: row.location,
+    online: row.online,
+    capacity: row.capacity,
+    startDate: row.start_date,
+    endDate: row.end_date,
+    status: row.status,
+    enrolledCount,
+    enrolled,
   };
 }

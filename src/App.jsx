@@ -19,6 +19,7 @@ import Contact from './pages/Contact';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
+import Requests from './pages/Requests';
 import ProtectedRoute from './components/common/ProtectedRoute';
 
 function App() {
@@ -44,6 +45,14 @@ function App() {
                   <Route path="/contact" element={<Contact />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
+                  <Route
+                    path="/requests"
+                    element={
+                      <ProtectedRoute>
+                        <Requests />
+                      </ProtectedRoute>
+                    }
+                  />
                   <Route
                     path="/profile"
                     element={

@@ -1,6 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import Reveal from '../components/animations/Reveal';
 import Counter from '../components/animations/Counter';
+import useStats from '../hooks/useStats';
 import { ShieldCheck, Target, Eye, Heart, Users, Briefcase } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -14,11 +15,12 @@ export default function About() {
     { icon: Users, title: t('about.valueImpactTitle'), description: t('about.valueImpactDesc') },
   ];
 
+  const { raw } = useStats();
   const stats = [
-    { value: 5000, suffix: '+', label: t('about.statWorkers') },
-    { value: 800, suffix: '+', label: t('about.statEmployers') },
-    { value: 12000, suffix: '+', label: t('about.statJobsCompleted') },
-    { value: 96, suffix: '%', label: t('about.statSatisfaction') },
+    { value: raw.workers, suffix: '', label: t('about.statWorkers') },
+    { value: raw.employers, suffix: '', label: t('about.statEmployers') },
+    { value: raw.hires, suffix: '', label: t('about.statJobsCompleted') },
+    ...(raw.satisfaction === null ? [] : [{ value: raw.satisfaction, suffix: '%', label: t('about.statSatisfaction') }]),
   ];
 
   return (

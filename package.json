@@ -8,8 +8,9 @@
     "dev:vite": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint src --ext .js,.jsx,.ts,.tsx --report-unused-disable-directives",
-    "db:seed": "node supabase/seed.mjs"
+    "lint": "eslint . --report-unused-disable-directives",
+    "db:seed": "node supabase/seed.mjs",
+    "db:remove-demo": "node supabase/remove-demo-accounts.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.4",

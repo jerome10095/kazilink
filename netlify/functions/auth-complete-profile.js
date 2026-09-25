@@ -14,19 +14,28 @@ export default async (req) => {
   const body = await req.json().catch(() => ({}));
   const {
     fullName, phone, role,
-    trade, tradeRw, bio, bioRw, location, experienceYears, rate,
+    serviceId, trade, tradeRw, bio, bioRw, location, experienceYears, rate,
     companyName, companyDescription, industry, website,
   } = body ?? {};
 
   const resolvedRole = role === 'employer' ? 'employer' : 'worker';
-  if (resolvedRole === 'worker' && !trade) {
-    return json({ error: 'trade is required for worker accounts' }, 400);
+  if (resolvedRole === 'worker' && !trade && !serviceId) {
+    return json({ error: 'A service category or trade is required for worker accounts' }, 400);
   }
   if (resolvedRole === 'employer' && !companyName) {
     return json({ error: 'companyName is required for employer accounts' }, 400);
   }
 
   const supabase = getServiceClient();
+
+  // A worker's category comes from the real services list; the trade text
+  // defaults to the category name when they don't give a more specific one.
+  let service = null;
+  if (resolvedRole === 'worker' && serviceId) {
+    const { data } = await supabase.from('services').select('id, title, title_rw').eq('id', serviceId).maybeSingle();
+    if (!data) return json({ error: 'Unknown service category' }, 400);
+    service = data;
+  }
 
   const { data: existing } = await supabase
     .from('users')
@@ -63,8 +72,9 @@ export default async (req) => {
       .from('worker_profiles')
       .insert({
         user_id: authUser.id,
-        trade,
-        trade_rw: tradeRw ?? null,
+        service_id: service?.id ?? null,
+        trade: trade || service.title,
+        trade_rw: tradeRw || (trade ? null : service.title_rw),
         bio: bio ?? null,
         bio_rw: bioRw ?? null,
         location: location || 'Kigali, Rwanda',

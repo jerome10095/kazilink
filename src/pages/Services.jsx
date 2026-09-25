@@ -50,7 +50,7 @@ export default function Services() {
         (service.descriptionRw ?? '').toLowerCase().includes(query.toLowerCase());
       return matchesCategory && matchesQuery;
     });
-  }, [category, query]);
+  }, [services, category, query]);
 
   return (
     <>

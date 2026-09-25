@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import Reveal from '../components/animations/Reveal';
 import { Mail, Phone, MapPin, Clock3, Send, Facebook, Twitter, Linkedin, Instagram, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { contactInfo, socialUrls } from '../lib/siteConfig';
 import { api } from '../lib/api';
 
 const initialForm = { name: '', email: '', subject: '', message: '' };
@@ -33,11 +34,18 @@ export default function Contact() {
   };
 
   const contactDetails = [
-    { icon: Phone, title: t('contact.phoneLabel'), value: '+250 788 123 456' },
-    { icon: Mail, title: t('contact.emailLabel'), value: 'info@kazilink.rw' },
-    { icon: MapPin, title: t('contact.locationLabel'), value: 'Kigali, Rwanda' },
-    { icon: Clock3, title: t('contact.hoursLabel'), value: t('contact.hoursValue') },
-  ];
+    { icon: Phone, title: t('contact.phoneLabel'), value: contactInfo.phone },
+    { icon: Mail, title: t('contact.emailLabel'), value: contactInfo.email },
+    { icon: MapPin, title: t('contact.locationLabel'), value: contactInfo.location },
+    { icon: Clock3, title: t('contact.hoursLabel'), value: contactInfo.hours },
+  ].filter((item) => item.value);
+
+  const socialLinks = [
+    { icon: Facebook, label: 'Facebook', href: socialUrls.facebook },
+    { icon: Twitter, label: 'Twitter/X', href: socialUrls.twitter },
+    { icon: Linkedin, label: 'LinkedIn', href: socialUrls.linkedin },
+    { icon: Instagram, label: 'Instagram', href: socialUrls.instagram },
+  ].filter((item) => item.href);
 
   return (
     <>
@@ -80,14 +88,18 @@ export default function Contact() {
                 );
               })}
 
+              {socialLinks.length > 0 && (
               <Reveal delay={0.2}>
                 <div className="card p-6">
                   <p className="mb-3 text-sm text-primary-700/70 dark:text-primary-100/70">{t('contact.social')}</p>
                   <div className="flex items-center gap-3">
-                    {[Facebook, Twitter, Linkedin, Instagram].map((Icon, index) => (
+                    {socialLinks.map(({ icon: Icon, label, href }) => (
                       <a
-                        key={index}
-                        href="#"
+                        key={label}
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={label}
                         className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-700 transition-all duration-300 hover:bg-primary-700 hover:text-white dark:bg-primary-700 dark:text-primary-100 dark:hover:bg-primary-400 dark:hover:text-primary-900"
                       >
                         <Icon size={18} />
@@ -96,6 +108,7 @@ export default function Contact() {
                   </div>
                 </div>
               </Reveal>
+              )}
             </div>
 
             <Reveal delay={0.1}>

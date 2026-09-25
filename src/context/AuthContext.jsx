@@ -121,6 +121,7 @@ export function AuthProvider({ children }) {
     return {
       user,
       authUser: session?.user ?? null,
+      accessToken: session?.access_token ?? null,
       loading,
       needsProfile,
       isAuthenticated: Boolean(user),

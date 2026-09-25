@@ -1,19 +1,120 @@
+import { useCallback, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { Link } from 'react-router-dom';
+import { BookOpen, Calendar, Clock, MapPin, Users, Loader2 } from 'lucide-react';
 import Reveal from '../components/animations/Reveal';
-import { BookOpen, Users, Shield, TrendingUp, MessageCircle, Award } from 'lucide-react';
+import { LoadingState, ErrorState } from '../components/ui/AsyncState';
+import { api } from '../lib/api';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
+
+function TrainingCard({ session, isAuthenticated, busy, onEnroll }) {
+  const { t, pick } = useLanguage();
+  const isFull = session.capacity !== null && session.enrolledCount >= session.capacity;
+  const isEnded = session.status === 'completed';
+  const description = pick(session.description, session.descriptionRw);
+
+  let action;
+  if (session.enrolled) {
+    action = <span className="font-medium text-green-700 dark:text-green-300">{t('training.enrolled')}</span>;
+  } else if (isEnded) {
+    action = <span className="text-ink/60 dark:text-primary-100/60">{t('training.ended')}</span>;
+  } else if (isFull) {
+    action = <span className="text-ink/60 dark:text-primary-100/60">{t('training.full')}</span>;
+  } else if (!isAuthenticated) {
+    action = (
+      <Link to="/login" state={{ from: '/training' }} className="btn-outline">
+        {t('training.loginToEnroll')}
+      </Link>
+    );
+  } else {
+    action = (
+      <button disabled={busy} onClick={() => onEnroll(session.id)} className="btn-primary gap-2 disabled:opacity-60">
+        {busy && <Loader2 size={16} className="animate-spin" />}
+        {busy ? t('training.enrolling') : t('training.enroll')}
+      </button>
+    );
+  }
+
+  return (
+    <div className="card p-6 card-hover flex flex-col">
+      <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary-50 text-primary-500 dark:bg-primary-700/60 dark:text-primary-200">
+        <BookOpen size={28} />
+      </div>
+      <h3 className="text-xl font-semibold mt-4 mb-2 dark:text-white">{pick(session.title, session.titleRw)}</h3>
+      {description && <p className="text-ink/60 leading-relaxed dark:text-primary-100/70">{description}</p>}
+
+      <ul className="mt-4 space-y-1.5 text-sm text-ink/70 dark:text-primary-100/70">
+        {session.instructor && (
+          <li className="flex items-center gap-2">
+            <Users size={14} /> {t('training.instructor', { name: session.instructor })}
+          </li>
+        )}
+        {session.durationHours !== null && (
+          <li className="flex items-center gap-2">
+            <Clock size={14} /> {t('training.durationHours', { hours: session.durationHours })}
+          </li>
+        )}
+        {session.startDate && (
+          <li className="flex items-center gap-2">
+            <Calendar size={14} /> {new Date(session.startDate).toLocaleDateString()}
+          </li>
+        )}
+        {(session.online || session.location) && (
+          <li className="flex items-center gap-2">
+            <MapPin size={14} /> {session.online ? t('training.online') : session.location}
+          </li>
+        )}
+        <li className="flex items-center gap-2">
+          <Users size={14} />
+          {session.capacity !== null
+            ? t('training.spotsOf', { count: session.enrolledCount, capacity: session.capacity })
+            : t('training.spots', { count: session.enrolledCount })}
+        </li>
+      </ul>
+
+      <div className="mt-auto pt-5 text-sm">{action}</div>
+    </div>
+  );
+}
 
 export default function Training() {
   const { t } = useLanguage();
+  const { isAuthenticated, accessToken } = useAuth();
+  const [sessions, setSessions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [actionError, setActionError] = useState('');
+  const [busyId, setBusyId] = useState(null);
 
-  const courses = [
-    { icon: MessageCircle, title: t('training.c1Title'), desc: t('training.c1Desc') },
-    { icon: Shield, title: t('training.c2Title'), desc: t('training.c2Desc') },
-    { icon: TrendingUp, title: t('training.c3Title'), desc: t('training.c3Desc') },
-    { icon: BookOpen, title: t('training.c4Title'), desc: t('training.c4Desc') },
-    { icon: Award, title: t('training.c5Title'), desc: t('training.c5Desc') },
-    { icon: Users, title: t('training.c6Title'), desc: t('training.c6Desc') },
-  ];
+  const load = useCallback(async () => {
+    try {
+      const { training } = await api.getTraining(accessToken);
+      setSessions(training);
+      setError('');
+    } catch {
+      setError(t('common.loadError'));
+    } finally {
+      setLoading(false);
+    }
+  }, [accessToken, t]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const handleEnroll = async (id) => {
+    setActionError('');
+    setBusyId(id);
+    try {
+      await api.enrollInTraining(id, accessToken);
+    } catch (err) {
+      setActionError(err.status === 409 ? err.message : t('training.enrollError'));
+    } finally {
+      await load();
+      setBusyId(null);
+    }
+  };
 
   return (
     <>
@@ -33,36 +134,33 @@ export default function Training() {
             </div>
           </Reveal>
 
+          {loading && <LoadingState label={t('common.loading')} />}
+          {!loading && error && <ErrorState message={error} />}
+          {actionError && (
+            <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-3 text-center text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300">
+              {actionError}
+            </div>
+          )}
+
+          {!loading && !error && sessions.length === 0 && (
+            <div className="mx-auto max-w-xl rounded-[28px] border border-dashed border-primary-200 bg-primary-50/40 p-10 text-center dark:border-primary-700 dark:bg-primary-800/40">
+              <p className="font-medium text-primary-800 dark:text-white">{t('training.empty')}</p>
+              <p className="mt-2 text-sm text-primary-700/75 dark:text-primary-100/75">{t('training.emptyHint')}</p>
+            </div>
+          )}
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {courses.map((course, index) => (
-              <Reveal key={index} delay={index * 0.1}>
-                <div className="card p-6 card-hover">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary-50 text-primary-500 dark:bg-primary-700/60 dark:text-primary-200">
-                    <course.icon size={28} />
-                  </div>
-                  <h3 className="text-xl font-semibold mt-4 mb-2 dark:text-white">{course.title}</h3>
-                  <p className="text-ink/60 leading-relaxed dark:text-primary-100/70">{course.desc}</p>
-                  <button className="mt-4 text-primary-500 font-medium hover:text-primary-600 transition-colors dark:text-primary-300 dark:hover:text-primary-200">
-                    {t('common.learnMore')} →
-                  </button>
-                </div>
+            {sessions.map((session, index) => (
+              <Reveal key={session.id} delay={index * 0.05}>
+                <TrainingCard
+                  session={session}
+                  isAuthenticated={isAuthenticated}
+                  busy={busyId === session.id}
+                  onEnroll={handleEnroll}
+                />
               </Reveal>
             ))}
           </div>
-
-          <Reveal>
-            <div className="mt-16 card p-8 bg-primary-50 border-primary-200 dark:bg-primary-800 dark:border-primary-700/50">
-              <div className="text-center">
-                <h2 className="heading-md mb-4 dark:text-white">{t('training.ctaHeading')}</h2>
-                <p className="text-ink/60 max-w-2xl mx-auto mb-6 dark:text-primary-100/70">
-                  {t('training.ctaParagraph')}
-                </p>
-                <button className="btn-primary">
-                  {t('training.ctaButton')}
-                </button>
-              </div>
-            </div>
-          </Reveal>
         </div>
       </section>
     </>

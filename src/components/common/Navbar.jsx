@@ -112,6 +112,9 @@ export default function Navbar() {
                   <User size={16} />
                   {user?.fullName?.split(' ')[0] ?? t('nav.profile')}
                 </Link>
+                <Link to="/requests" className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-primary-700 transition-colors hover:bg-primary-50 dark:text-primary-100 dark:hover:bg-primary-800">
+                  {t('nav.requests')}
+                </Link>
                 <button onClick={handleLogout} className="btn-primary text-sm gap-2">
                   <LogOut size={16} />
                   {t('profile.logout')}
@@ -189,6 +192,9 @@ export default function Navbar() {
                     <>
                       <Link to="/profile" className="text-center text-sm font-medium text-primary-700 dark:text-primary-100">
                         {user?.fullName?.split(' ')[0] ?? t('nav.profile')}
+                      </Link>
+                      <Link to="/requests" className="text-center text-sm font-medium text-primary-700 dark:text-primary-100">
+                        {t('nav.requests')}
                       </Link>
                       <button onClick={handleLogout} className="btn-primary text-sm justify-center gap-2">
                         <LogOut size={16} />
